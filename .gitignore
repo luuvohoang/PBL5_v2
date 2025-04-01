@@ -1,0 +1,11 @@
+# Backend build files
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Frontend build files
+node_modules/
+*.pack
+dist/
