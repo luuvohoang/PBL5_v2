@@ -29,3 +29,12 @@ build/
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Ignore server.js
+server.js
+
+# Ignore Visual Studio solution file
+project1.sln
+
+# Ignore package-lock.json
+package-lock.json
