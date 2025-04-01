@@ -1,0 +1,156 @@
+.product-card {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-card-content {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.product-card p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.price-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.price {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.discount-badge {
+    background: #ff4444;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+button {
+    margin-top: auto;
+    padding: 8px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin: 5px 0;
+}
+
+.status-available {
+    background: #28a745;
+    color: white;
+}
+
+.status-outofstock {
+    background: #dc3545;
+    color: white;
+}
+
+.status-discontinued {
+    background: #6c757d;
+    color: white;
+}
+
+.admin-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+    width: 100%;
+    flex-direction: row;
+    /* Đảm bảo buttons nằm cùng hàng */
+    padding: 0 10px;
+    /* Thêm padding để buttons không sát mép */
+}
+
+.admin-buttons button {
+    flex: 1;
+    /* Mỗi button chiếm không gian bằng nhau */
+    min-width: 70px;
+    max-width: 120px;
+    /* Giới hạn chiều rộng tối đa */
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0;
+    /* Reset margin */
+}
+
+.edit-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.delete-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #da190b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
