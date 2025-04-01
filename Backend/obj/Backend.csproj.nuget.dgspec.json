@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Visual studio\\Project\\PBL5_v2-master\\Backend\\Backend.csproj": {}
+    "C:\\Users\\GIGABYTE\\Desktop\\PBL5\\master-PBL5\\PBL5_v2\\Backend\\Backend.csproj": {}
   },
   "projects": {
-    "C:\\Visual studio\\Project\\PBL5_v2-master\\Backend\\Backend.csproj": {
+    "C:\\Users\\GIGABYTE\\Desktop\\PBL5\\master-PBL5\\PBL5_v2\\Backend\\Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Visual studio\\Project\\PBL5_v2-master\\Backend\\Backend.csproj",
+        "projectUniqueName": "C:\\Users\\GIGABYTE\\Desktop\\PBL5\\master-PBL5\\PBL5_v2\\Backend\\Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "C:\\Visual studio\\Project\\PBL5_v2-master\\Backend\\Backend.csproj",
-        "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-        "outputPath": "C:\\Visual studio\\Project\\PBL5_v2-master\\Backend\\obj\\",
+        "projectPath": "C:\\Users\\GIGABYTE\\Desktop\\PBL5\\master-PBL5\\PBL5_v2\\Backend\\Backend.csproj",
+        "packagesPath": "C:\\Users\\GIGABYTE\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\GIGABYTE\\Desktop\\PBL5\\master-PBL5\\PBL5_v2\\Backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\GIGABYTE\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -82,24 +81,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.20, 7.0.20]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[7.0.20, 7.0.20]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.20, 7.0.20]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.20, 7.0.20]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -108,7 +89,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }
