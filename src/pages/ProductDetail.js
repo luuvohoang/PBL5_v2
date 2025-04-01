@@ -56,7 +56,7 @@ const ProductDetail = () => {
         <div className="container">
             <div className="product-detail">
                 <div className="product-image">
-                    <img src={product.imageUrl} alt={product.name} />
+                    <img src={`./assets/${product.imageUrl}`} alt={product.name} />
                 </div>
                 <div className="product-info">
                     <h1>{product.name}</h1>

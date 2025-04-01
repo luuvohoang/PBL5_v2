@@ -16,6 +16,9 @@ import CustomerChat from './pages/CustomerChat';
 import EditProduct from './pages/EditProduct';
 import Categories from './pages/Categories';
 import ProductManagement from './pages/ProductManagement';
+import Checkout from './pages/Checkout';
+import Profile from './pages/Profile';
+import Orders from './pages/Orders';
 
 function App() {
     return (
@@ -85,6 +88,9 @@ function App() {
                                 />
                             }
                         />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/orders" element={<Orders />} />
                     </Routes>
                 </div>
             </Router>

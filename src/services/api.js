@@ -259,3 +259,58 @@ export const addProduct = async (productData) => {
         throw error;
     }
 };
+
+export const updateUserProfile = async (userId, profileData) => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.put(`${API_URL}/users/${userId}/profile`, profileData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'UserRole': user?.role
+            }
+        });
+
+        if (response.data && response.data.user) {
+            // Trả về dữ liệu mới từ server
+            return response.data;
+        }
+        throw new Error('Invalid response format');
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        throw error;
+    }
+};
+
+export const getUserProfile = async (userId) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        throw error;
+    }
+};
+
+export const getUserOrders = async (userId) => {
+    try {
+        const response = await axios.get(`${API_URL}/orders/user/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user orders:', error);
+        throw error;
+    }
+};
+
+export const createOrder = async (orderData) => {
+    try {
+        const response = await axios.post(`${API_URL}/orders`, orderData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating order:', error.response?.data || error.message);
+        throw error;
+    }
+};

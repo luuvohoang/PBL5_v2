@@ -79,7 +79,9 @@ namespace Backend.Controllers
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
-                    Role = role
+                    Role = role,
+                    PhoneNumber = user.PhoneNumber,
+                    Address = user.Address
                 });
             }
             catch (Exception ex)
