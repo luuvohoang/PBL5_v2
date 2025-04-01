@@ -15,6 +15,7 @@ import Chat from './pages/Chat';
 import CustomerChat from './pages/CustomerChat';
 import EditProduct from './pages/EditProduct';
 import Categories from './pages/Categories';
+import ProductManagement from './pages/ProductManagement';
 
 function App() {
     return (
@@ -72,6 +73,15 @@ function App() {
                                 <PrivateRoute
                                     element={<Categories />}
                                     allowedRoles={['Admin', 'Manager']}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/ProductManagement"
+                            element={
+                                <PrivateRoute
+                                    element={<ProductManagement />}
+                                    allowedRoles={['Admin', 'Manager', 'Staff']}
                                 />
                             }
                         />

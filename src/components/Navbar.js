@@ -21,7 +21,7 @@ const Navbar = () => {
                     <>
                         <Link to="/employees">Employee Management</Link>
                         <Link to="/customers">Customer Management</Link>
-                        <Link to="/products/manage">Product Management</Link>
+                        <Link to="/ProductManagement">Product Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
@@ -30,7 +30,7 @@ const Navbar = () => {
                     <>
                         <Link to="/employees">Employee Management</Link>
                         <Link to="/customers">Customer Management</Link>
-                        <Link to="/products/manage">Product Management</Link>
+                        <Link to="/ProductManagement">Product Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
@@ -38,7 +38,7 @@ const Navbar = () => {
                 return (
                     <>
                         <Link to="/customers">Customer Management</Link>
-                        <Link to="/products/manage">Product Management</Link>
+                        <Link to="/ProductManagement">Product Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
@@ -103,9 +103,6 @@ const Navbar = () => {
                                 <Link to="/products?category=gpu">GPUs</Link>
                                 <Link to="/products?category=motherboard">Motherboards</Link>
                                 <Link to="/products?category=ram">RAM</Link>
-                                <Link to="/products?category=storage">Storage</Link>
-                                <Link to="/products?category=psu">Power Supplies</Link>
-                                <Link to="/products?category=case">Cases</Link>
                             </div>
                         </div>
                         <div className="main-menu">

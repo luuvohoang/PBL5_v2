@@ -9,6 +9,14 @@ const EditProduct = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const validStatuses = ['Available', 'OutOfStock', 'Discontinued'];
+    const displayStatuses = {
+        'Available': 'Available',
+        'OutOfStock': 'Out of Stock',
+        'Discontinued': 'Discontinued'
+    };
 
     useEffect(() => {
         loadProduct();
@@ -29,9 +37,19 @@ const EditProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await updateProduct(id, product);
+            const productData = {
+                name: product.name,
+                description: product.description,
+                price: Number(product.price),
+                category: product.category,
+                manufacturer: product.manufacturer,
+                stockQuantity: Number(product.stockQuantity),
+                status: product.status
+            };
+
+            await updateProduct(id, productData);
             alert('Product updated successfully!');
-            navigate('/products');
+            navigate('/ProductManagement');
         } catch (err) {
             setError('Failed to update product');
             console.error(err);
@@ -40,12 +58,44 @@ const EditProduct = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        if (name === 'status') {
+            const dbStatus = Object.keys(displayStatuses).find(key => 
+                displayStatuses[key] === value || key === value
+            ) || 'Available';
+            
+            setProduct(prev => ({
+                ...prev,
+                status: dbStatus
+            }));
+            return;
+        }
+
         setProduct(prev => ({
             ...prev,
             [name]: name === 'price' || name === 'stockQuantity'
                 ? parseFloat(value)
                 : value
         }));
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5000000) { // 5MB limit
+                alert('File is too large. Please choose an image under 5MB.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSelectedImage(reader.result); // For preview only
+                setProduct(prev => ({
+                    ...prev,
+                    imageFile: file // Store the actual file
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     if (loading) return <div>Loading...</div>;
@@ -90,14 +140,24 @@ const EditProduct = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Image URL:</label>
-                    <input
-                        type="text"
-                        name="imageUrl"
-                        value={product.imageUrl}
-                        onChange={handleChange}
-                        required
-                    />
+                    <label>Image:</label>
+                    <div className="image-upload-container">
+                        <label htmlFor="imageUpload" className="image-upload-label">
+                            Change Product Image
+                        </label>
+                        <input
+                            id="imageUpload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                        />
+                        <div className="image-preview">
+                            <img 
+                                src={selectedImage || `./assets/${product.imageUrl}`} 
+                                alt={product.name}
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="form-group">
@@ -134,10 +194,17 @@ const EditProduct = () => {
 
                 <div className="form-group">
                     <label>Status:</label>
-                    <select name="status" value={product.status} onChange={handleChange}>
-                        <option value="Available">Available</option>
-                        <option value="OutOfStock">Out of Stock</option>
-                        <option value="Discontinued">Discontinued</option>
+                    <select 
+                        name="status" 
+                        value={displayStatuses[product.status] || product.status}
+                        onChange={handleChange}
+                        required
+                    >
+                        {validStatuses.map(status => (
+                            <option key={status} value={displayStatuses[status] || status}>
+                                {displayStatuses[status] || status}
+                            </option>
+                        ))}
                     </select>
                 </div>
 

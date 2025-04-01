@@ -203,10 +203,70 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, productData) => {
     try {
-        const response = await axios.put(`${API_URL}/products/${id}`, productData);
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        // Convert status to exact string values expected by database
+        let status = 'Available'; // default value
+        switch (productData.status?.toLowerCase()) {
+            case 'out of stock':
+                status = 'OutOfStock';
+                break;
+            case 'discontinued':
+                status = 'Discontinued';
+                break;
+            case 'available':
+                status = 'Available';
+                break;
+        }
+
+        const jsonData = {
+            name: productData.name,
+            description: productData.description,
+            price: Number(productData.price),
+            category: productData.category,
+            stockQuantity: Number(productData.stockQuantity),
+            status: status,
+            manufacturer: productData.manufacturer,
+            imageUrl: productData.imageUrl,
+            updatedById: user?.id || null
+        };
+
+        const response = await axios.put(`${API_URL}/products/${id}`, jsonData);
         return response.data;
     } catch (error) {
-        console.error('UpdateProduct API error:', error.response?.data || error.message);
+        console.error('UpdateProduct API error:', error);
+        throw error;
+    }
+};
+
+export const addProduct = async (productData) => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const formData = new FormData();
+
+        // Adjust image path format
+        const fileName = productData.imageFile.name;
+        formData.append('imageUrl', `images/${fileName}`);  // Remove leading slash
+
+        formData.append('name', productData.name);
+        formData.append('description', productData.description);
+        formData.append('price', productData.price);
+        formData.append('category', productData.category);
+        formData.append('stockQuantity', productData.stockQuantity);
+        formData.append('status', productData.status);
+        formData.append('manufacturer', productData.manufacturer);
+        formData.append('createdById', user?.id || null);
+        formData.append('updatedById', user?.id || null);
+        formData.append('imageFile', productData.imageFile);
+
+        const response = await axios.post(`${API_URL}/products`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('AddProduct API error:', error);
         throw error;
     }
 };
