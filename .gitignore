@@ -5,7 +5,27 @@ obj/
 *.exe
 *.pdb
 
-# Frontend build files
+# Node.js dependencies
 node_modules/
-*.pack
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Build outputs
 dist/
+build/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
