@@ -47,7 +47,7 @@ const ProductCard = ({ product, onDelete }) => {
 
     return (
         <Link to={`/product/${product.id}`} className="card product-card">
-            <img src={product.imageUrl} alt={product.name} />
+            <img src={`./assets/${product.imageUrl}`} alt={product.name} />
             <h3>{product.name}</h3>
             <p>{product.description}</p>
             <div className="price-container">

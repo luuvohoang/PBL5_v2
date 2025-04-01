@@ -47,7 +47,7 @@ const ProductManagement = () => {
                 alert('File is too large. Please choose an image under 5MB.');
                 return;
             }
-            
+
             const reader = new FileReader();
             reader.onloadend = () => {
                 setSelectedImage(reader.result); // For preview only
@@ -71,11 +71,13 @@ const ProductManagement = () => {
                 manufacturer: newProduct.manufacturer,
                 stockQuantity: Number(newProduct.stockQuantity),
                 status: newProduct.status,
-                imageFile: newProduct.imageFile // Send the actual file
+                imageFile: newProduct.imageFile,
+                imageUrl: newProduct.imageFile ? `/images/${newProduct.imageFile.name}` : null
             };
 
             await addProduct(productData);
-            
+
+            // Reset form and refresh list
             setNewProduct({
                 name: '',
                 price: '',
@@ -208,9 +210,9 @@ const ProductManagement = () => {
                 {products && products.length > 0 ? (
                     products.map((product) => (
                         <div key={product.id} className="product-item">
-                            <img 
-                                src={`./assets/${product.imageUrl}`} 
-                                alt={product.name} 
+                            <img
+                                src={`./assets/${product.imageUrl}`}
+                                alt={product.name}
                             />
                             <div className="product-details">
                                 <h3>{product.name}</h3>

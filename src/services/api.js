@@ -203,38 +203,21 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, productData) => {
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
-
-        // Convert status to exact string values expected by database
-        let status = 'Available'; // default value
-        switch (productData.status?.toLowerCase()) {
-            case 'out of stock':
-                status = 'OutOfStock';
-                break;
-            case 'discontinued':
-                status = 'Discontinued';
-                break;
-            case 'available':
-                status = 'Available';
-                break;
+        // Convert FormData to plain object for debugging
+        const formDataObject = {};
+        for (let pair of productData.entries()) {
+            formDataObject[pair[0]] = pair[1];
         }
+        console.log('Sending data:', formDataObject);
 
-        const jsonData = {
-            name: productData.name,
-            description: productData.description,
-            price: Number(productData.price),
-            category: productData.category,
-            stockQuantity: Number(productData.stockQuantity),
-            status: status,
-            manufacturer: productData.manufacturer,
-            imageUrl: productData.imageUrl,
-            updatedById: user?.id || null
-        };
-
-        const response = await axios.put(`${API_URL}/products/${id}`, jsonData);
+        const response = await axios.put(`${API_URL}/products/${id}`, productData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
         return response.data;
     } catch (error) {
-        console.error('UpdateProduct API error:', error);
+        console.error('Full error details:', error.response?.data);
         throw error;
     }
 };
@@ -244,10 +227,7 @@ export const addProduct = async (productData) => {
         const user = JSON.parse(localStorage.getItem('user'));
         const formData = new FormData();
 
-        // Adjust image path format
-        const fileName = productData.imageFile.name;
-        formData.append('imageUrl', `images/${fileName}`);  // Remove leading slash
-
+        // Add all basic fields
         formData.append('name', productData.name);
         formData.append('description', productData.description);
         formData.append('price', productData.price);
@@ -255,9 +235,18 @@ export const addProduct = async (productData) => {
         formData.append('stockQuantity', productData.stockQuantity);
         formData.append('status', productData.status);
         formData.append('manufacturer', productData.manufacturer);
-        formData.append('createdById', user?.id || null);
-        formData.append('updatedById', user?.id || null);
-        formData.append('imageFile', productData.imageFile);
+
+        // Add image file if exists
+        if (productData.imageFile) {
+            formData.append('imageFile', productData.imageFile);
+            formData.append('imageUrl', `/images/${productData.imageFile.name}`);
+        }
+
+        // Add user information
+        if (user?.id) {
+            formData.append('createdById', user.id);
+            formData.append('updatedById', user.id);
+        }
 
         const response = await axios.post(`${API_URL}/products`, formData, {
             headers: {

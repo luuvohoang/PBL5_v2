@@ -177,11 +177,10 @@ namespace Backend.Controllers
 
         [HttpPut("{id}")]
         [RoleAuthorization("Admin", "Manager")]
-        public async Task<ActionResult<ProductDTO>> UpdateProduct(int id, [FromBody] ProductUpdateDTO dto)
+        public async Task<ActionResult<ProductDTO>> UpdateProduct(int id, [FromForm] ProductUpdateDTO dto)
         {
             try
             {
-                // 1. Lấy sản phẩm hiện tại
                 var product = await _context.Products
                     .Include(p => p.Sale)
                     .FirstOrDefaultAsync(p => p.Id == id);
@@ -191,40 +190,46 @@ namespace Backend.Controllers
                     return NotFound($"Product with ID {id} not found");
                 }
 
-                // 2. Cập nhật thông tin
+                // Update basic product fields
                 product.Name = dto.Name;
                 product.Description = dto.Description;
                 product.Price = dto.Price;
-                product.ImageUrl = dto.ImageUrl;
                 product.Category = dto.Category;
                 product.StockQuantity = dto.StockQuantity;
                 product.Manufacturer = dto.Manufacturer;
                 product.Status = dto.Status;
-                product.SaleId = dto.SaleId;
 
-                // 3. Cập nhật UpdatedById nếu có
-                if (Request.Headers.TryGetValue("UserId", out var userIdValue) &&
-                    int.TryParse(userIdValue, out int userId))
+                // Handle image upload
+                var imageFile = Request.Form.Files.GetFile("imageFile");
+                if (imageFile != null)
                 {
-                    var employee = await _context.Employees
-                        .FirstOrDefaultAsync(e => e.UserId == userId);
-                    if (employee != null)
+                    var fileName = Path.GetFileName(imageFile.FileName);
+                    var uploadDir = Path.Combine("wwwroot", "images");
+                    Directory.CreateDirectory(uploadDir);
+
+                    var filePath = Path.Combine(uploadDir, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        product.UpdatedById = employee.Id;
+                        await imageFile.CopyToAsync(stream);
                     }
+
+                    product.ImageUrl = $"/images/{fileName}"; // Store with /images/ prefix
+                }
+                else if (!string.IsNullOrEmpty(dto.ImageUrl))
+                {
+                    // Keep the original ImageUrl if no new file is uploaded
+                    product.ImageUrl = dto.ImageUrl;
                 }
 
-                // 4. Lưu thay đổi
                 await _context.SaveChangesAsync();
 
-                // 5. Lấy dữ liệu mới nhất
+                // Return updated product
                 var updatedProduct = await _context.Products
                     .Include(p => p.Sale)
                     .Include(p => p.CreatedBy)
                     .Include(p => p.UpdatedBy)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
-                // 6. Trả về DTO
                 return Ok(new ProductDTO
                 {
                     Id = updatedProduct.Id,
@@ -262,7 +267,92 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [RoleAuthorization("Admin", "Manager")]
+        public async Task<ActionResult<ProductDTO>> CreateProduct([FromForm] ProductUpdateDTO dto)
+        {
+            try
+            {
+                var product = new Product
+                {
+                    Name = dto.Name,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    Category = dto.Category,
+                    StockQuantity = dto.StockQuantity,
+                    Manufacturer = dto.Manufacturer,
+                    Status = dto.Status
+                };
+
+                // Handle image upload
+                var imageFile = Request.Form.Files.GetFile("imageFile");
+                if (imageFile != null)
+                {
+                    var fileName = Path.GetFileName(imageFile.FileName);
+                    var uploadDir = Path.Combine("wwwroot", "images");
+                    Directory.CreateDirectory(uploadDir);
+
+                    var filePath = Path.Combine(uploadDir, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    product.ImageUrl = $"/images/{fileName}";
+                }
+
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+
+                // Return the created product
+                var createdProduct = await _context.Products
+                    .Include(p => p.Sale)
+                    .Include(p => p.CreatedBy)
+                    .Include(p => p.UpdatedBy)
+                    .FirstOrDefaultAsync(p => p.Id == product.Id);
+
+                return Ok(new ProductDTO
+                {
+                    Id = createdProduct.Id,
+                    Name = createdProduct.Name,
+                    Description = createdProduct.Description,
+                    Price = createdProduct.Price,
+                    ImageUrl = createdProduct.ImageUrl,
+                    Category = createdProduct.Category,
+                    StockQuantity = createdProduct.StockQuantity,
+                    Manufacturer = createdProduct.Manufacturer,
+                    Status = createdProduct.Status,
+                    SoldQuantity = createdProduct.SoldQuantity,
+                    CreatedBy = createdProduct.CreatedBy == null ? null : new EmployeeDTO
+                    {
+                        Id = createdProduct.CreatedBy.Id,
+                        FirstName = createdProduct.CreatedBy.FirstName,
+                        LastName = createdProduct.CreatedBy.LastName
+                    },
+                    UpdatedBy = createdProduct.UpdatedBy == null ? null : new EmployeeDTO
+                    {
+                        Id = createdProduct.UpdatedBy.Id,
+                        FirstName = createdProduct.UpdatedBy.FirstName,
+                        LastName = createdProduct.UpdatedBy.LastName
+                    },
+                    Sale = createdProduct.Sale == null ? null : new SaleDTO
+                    {
+                        Id = createdProduct.Sale.Id,
+                        Name = createdProduct.Sale.Name,
+                        DiscountPercent = createdProduct.Sale.DiscountPercent,
+                        StartDate = createdProduct.Sale.StartDate,
+                        EndDate = createdProduct.Sale.EndDate,
+                        IsActive = createdProduct.Sale.IsActive
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 

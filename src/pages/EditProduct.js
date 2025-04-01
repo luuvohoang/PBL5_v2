@@ -37,32 +37,42 @@ const EditProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const productData = {
-                name: product.name,
-                description: product.description,
-                price: Number(product.price),
-                category: product.category,
-                manufacturer: product.manufacturer,
-                stockQuantity: Number(product.stockQuantity),
-                status: product.status
-            };
+            const formData = new FormData();
 
-            await updateProduct(id, productData);
+            // Add basic product data
+            formData.append('name', product.name);
+            formData.append('description', product.description);
+            formData.append('price', product.price.toString());
+            formData.append('category', product.category);
+            formData.append('manufacturer', product.manufacturer);
+            formData.append('stockQuantity', product.stockQuantity.toString());
+            formData.append('status', product.status);
+
+            // Handle image - preserve the /images/ path format
+            if (product.imageFile) {
+                formData.append('imageFile', product.imageFile);
+            } else {
+                // Keep the original path format
+                formData.append('imageUrl', product.imageUrl);
+            }
+
+            const result = await updateProduct(id, formData);
+            console.log('Update successful:', result);
             alert('Product updated successfully!');
             navigate('/ProductManagement');
         } catch (err) {
-            setError('Failed to update product');
-            console.error(err);
+            console.error('Update failed:', err.response?.data);
+            setError(err.response?.data?.message || 'Failed to update product');
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'status') {
-            const dbStatus = Object.keys(displayStatuses).find(key => 
+            const dbStatus = Object.keys(displayStatuses).find(key =>
                 displayStatuses[key] === value || key === value
             ) || 'Available';
-            
+
             setProduct(prev => ({
                 ...prev,
                 status: dbStatus
@@ -85,7 +95,7 @@ const EditProduct = () => {
                 alert('File is too large. Please choose an image under 5MB.');
                 return;
             }
-            
+
             const reader = new FileReader();
             reader.onloadend = () => {
                 setSelectedImage(reader.result); // For preview only
@@ -152,8 +162,8 @@ const EditProduct = () => {
                             onChange={handleImageChange}
                         />
                         <div className="image-preview">
-                            <img 
-                                src={selectedImage || `./assets/${product.imageUrl}`} 
+                            <img
+                                src={selectedImage || `./assets/${product.imageUrl}`}
                                 alt={product.name}
                             />
                         </div>
@@ -194,8 +204,8 @@ const EditProduct = () => {
 
                 <div className="form-group">
                     <label>Status:</label>
-                    <select 
-                        name="status" 
+                    <select
+                        name="status"
                         value={displayStatuses[product.status] || product.status}
                         onChange={handleChange}
                         required
