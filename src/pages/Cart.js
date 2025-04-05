@@ -21,7 +21,7 @@ const Cart = () => {
             <div className="cart-items">
                 {cart.map(item => (
                     <div key={`${item.cartId}-${item.productId}`} className="card cart-item">
-                        <img src={item.imageUrl} alt={item.name} style={{ width: '100px' }} />
+                        <img src={`./assets/${item.imageUrl}`} alt={item.name} style={{ width: '100px' }} />
                         <div>
                             <h3>{item.name}</h3>
                             <div className="price-container">

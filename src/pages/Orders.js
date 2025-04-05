@@ -61,7 +61,7 @@ const Orders = () => {
                             <div className="order-items">
                                 {order.orderDetails.map(item => (
                                     <div key={item.id} className="order-item">
-                                        <img src={item.product.imageUrl} alt={item.product.name} />
+                                        <img src={`./assets/${item.product.imageUrl}`} alt={item.product.name} />
                                         <div className="item-info">
                                             <p>{item.product.name}</p>
                                             <p>Quantity: {item.quantity}</p>
