@@ -164,8 +164,6 @@ namespace Backend.Migrations
                     b.ToTable("Messages");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("Backend.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -238,7 +236,6 @@ namespace Backend.Migrations
                     b.ToTable("OrderDetails");
                 });
 
->>>>>>> fixbug
             modelBuilder.Entity("Backend.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -297,14 +294,10 @@ namespace Backend.Migrations
 
                     b.HasIndex("UpdatedById");
 
-<<<<<<< HEAD
-                    b.ToTable("Products");
-=======
                     b.ToTable("Products", t =>
                         {
                             t.HasTrigger("TR_Products_UpdateStatus");
                         });
->>>>>>> fixbug
 
                     b.HasData(
                         new
@@ -421,12 +414,9 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
->>>>>>> fixbug
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -438,12 +428,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
->>>>>>> fixbug
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -521,8 +508,6 @@ namespace Backend.Migrations
                     b.Navigation("Sender");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("Backend.Models.Order", b =>
                 {
                     b.HasOne("Backend.Models.User", "User")
@@ -553,7 +538,6 @@ namespace Backend.Migrations
                     b.Navigation("Product");
                 });
 
->>>>>>> fixbug
             modelBuilder.Entity("Backend.Models.Product", b =>
                 {
                     b.HasOne("Backend.Models.Employee", "CreatedBy")
@@ -605,14 +589,11 @@ namespace Backend.Migrations
                     b.Navigation("ProductCategories");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("Backend.Models.Order", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
->>>>>>> fixbug
             modelBuilder.Entity("Backend.Models.Product", b =>
                 {
                     b.Navigation("CartProducts");

@@ -177,18 +177,10 @@ namespace Backend.Controllers
 
         [HttpPut("{id}")]
         [RoleAuthorization("Admin", "Manager")]
-<<<<<<< HEAD
-        public async Task<ActionResult<ProductDTO>> UpdateProduct(int id, [FromBody] ProductUpdateDTO dto)
-        {
-            try
-            {
-                // 1. Lấy sản phẩm hiện tại
-=======
         public async Task<ActionResult<ProductDTO>> UpdateProduct(int id, [FromForm] ProductUpdateDTO dto)
         {
             try
             {
->>>>>>> fixbug
                 var product = await _context.Products
                     .Include(p => p.Sale)
                     .FirstOrDefaultAsync(p => p.Id == id);
@@ -198,42 +190,14 @@ namespace Backend.Controllers
                     return NotFound($"Product with ID {id} not found");
                 }
 
-<<<<<<< HEAD
-                // 2. Cập nhật thông tin
-                product.Name = dto.Name;
-                product.Description = dto.Description;
-                product.Price = dto.Price;
-                product.ImageUrl = dto.ImageUrl;
-=======
                 // Update basic product fields
                 product.Name = dto.Name;
                 product.Description = dto.Description;
                 product.Price = dto.Price;
->>>>>>> fixbug
                 product.Category = dto.Category;
                 product.StockQuantity = dto.StockQuantity;
                 product.Manufacturer = dto.Manufacturer;
                 product.Status = dto.Status;
-<<<<<<< HEAD
-                product.SaleId = dto.SaleId;
-
-                // 3. Cập nhật UpdatedById nếu có
-                if (Request.Headers.TryGetValue("UserId", out var userIdValue) &&
-                    int.TryParse(userIdValue, out int userId))
-                {
-                    var employee = await _context.Employees
-                        .FirstOrDefaultAsync(e => e.UserId == userId);
-                    if (employee != null)
-                    {
-                        product.UpdatedById = employee.Id;
-                    }
-                }
-
-                // 4. Lưu thay đổi
-                await _context.SaveChangesAsync();
-
-                // 5. Lấy dữ liệu mới nhất
-=======
 
                 // Handle image upload
                 var imageFile = Request.Form.Files.GetFile("imageFile");
@@ -260,17 +224,12 @@ namespace Backend.Controllers
                 await _context.SaveChangesAsync();
 
                 // Return updated product
->>>>>>> fixbug
                 var updatedProduct = await _context.Products
                     .Include(p => p.Sale)
                     .Include(p => p.CreatedBy)
                     .Include(p => p.UpdatedBy)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
-<<<<<<< HEAD
-                // 6. Trả về DTO
-=======
->>>>>>> fixbug
                 return Ok(new ProductDTO
                 {
                     Id = updatedProduct.Id,
@@ -308,9 +267,6 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-<<<<<<< HEAD
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-=======
                 return BadRequest(new { message = ex.Message });
             }
         }
@@ -397,7 +353,6 @@ namespace Backend.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
->>>>>>> fixbug
             }
         }
 
