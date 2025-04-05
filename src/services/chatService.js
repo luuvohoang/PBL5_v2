@@ -1,9 +1,11 @@
 import * as signalR from '@microsoft/signalr';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 class ChatService {
     constructor() {
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl('http://localhost:5000/chatHub', {
+            .withUrl(`${API_URL}/chatHub`, {
                 withCredentials: true,
                 skipNegotiation: true,
                 transport: signalR.HttpTransportType.WebSockets

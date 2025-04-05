@@ -88,12 +88,13 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins(
             "http://localhost:3000",
-            "https://pbl5-v2.onrender.com"
-        // "https://your-frontend-domain.onrender.com" // Replace with your frontend URL
+            "https://luuvohoang.github.io",
+            "https://luuvohoang.github.io/PBL5_v2"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials();
+        .AllowCredentials()
+        .SetIsOriginAllowed(_ => true); // Be careful with this in production
     });
 });
 
@@ -112,11 +113,13 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     });
 }
 
-app.UseHttpsRedirection();
+// Move CORS middleware before routing and authorization
 app.UseCors("AllowReact");
+
+app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthorization();
 
-app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

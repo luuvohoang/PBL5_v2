@@ -21,7 +21,9 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "cleanup": "node cleanup.js"
+        "cleanup": "node cleanup.js",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
     },
     "browserslist": {
         "production": [
@@ -40,5 +42,10 @@
             "react-app",
             "react-app/jest"
         ]
-    }
+    },
+    "devDependencies": {
+        "gh-pages": "^6.3.0"
+    },
+    "homepage": "https://luuvohoang.github.io/PBL5_v2"
+
 }

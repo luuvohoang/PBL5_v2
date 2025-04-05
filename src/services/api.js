@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+// Cấu hình axios interceptor
 axios.interceptors.request.use(
     (config) => {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -12,8 +15,6 @@ axios.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-
-const API_URL = 'http://localhost:5000/api';  // Make sure this matches your backend URL
 
 export const getProducts = async (category) => {
     const response = await axios.get(`${API_URL}/products${category ? `?category=${category}` : ''}`);
