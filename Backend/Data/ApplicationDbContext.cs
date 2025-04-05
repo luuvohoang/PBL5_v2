@@ -23,6 +23,14 @@ namespace Backend.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.ConfigureWarnings(warnings =>
+                warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+
+            base.OnConfiguring(optionsBuilder);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -43,6 +51,28 @@ namespace Backend.Data
             modelBuilder.Entity<Sale>()
                 .Property(s => s.DiscountPercent)
                 .HasColumnType("decimal(5,2)");
+
+            // Configure Order decimal properties
+            modelBuilder.Entity<Order>()
+                .Property(o => o.ShippingFee)
+                .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.SubTotal)
+                .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalAmount)
+                .HasColumnType("decimal(10,2)");
+
+            // Configure OrderDetail decimal properties
+            modelBuilder.Entity<OrderDetail>()
+                .Property(od => od.Subtotal)
+                .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<OrderDetail>()
+                .Property(od => od.UnitPrice)
+                .HasColumnType("decimal(10,2)");
 
             // Configure Cart relationships
             modelBuilder.Entity<Cart>()

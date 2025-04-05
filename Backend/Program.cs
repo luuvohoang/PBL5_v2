@@ -1,9 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using Backend.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using Backend.Data;
 using Backend.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add port configuration
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -63,7 +70,8 @@ builder.Services.AddSwaggerGen(c =>
 
 // Add DB Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(Environment.GetEnvironmentVariable("DATABASE_URL") ??
+        builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlServerOptionsAction: sqlOptions =>
         {
             sqlOptions.EnableRetryOnFailure(
@@ -78,10 +86,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", builder =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        builder.AllowAnyOrigin()
                .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials();  // Add this line
+               .AllowAnyMethod();
     });
 });
 
