@@ -1,0 +1,47 @@
+# Backend build files
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Node.js dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Build outputs
+dist/
+build/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore server.js
+server.js
+
+# Ignore Visual Studio solution file
+project1.sln
+
+# Ignore package-lock.json
+package-lock.json
+
+# Thêm vào file .gitignore
+appsettings.json
+appsettings.*.json
+
+# Nhưng vẫn giữ lại file mẫu
+!appsettings.example.json
