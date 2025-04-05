@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Backend.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using Backend.Data;
 using Backend.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);

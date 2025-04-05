@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250322083115_AddTimestampsToProduct")]
-    partial class AddTimestampsToProduct
+    [Migration("20250405143122_Initial_Migration_V1")]
+    partial class Initial_Migration_V1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -134,51 +134,6 @@ namespace Backend.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Backend.Models.InventoryTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PurchaseOrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TransactionType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("PurchaseOrderId");
-
-                    b.ToTable("InventoryTransactions");
-                });
-
             modelBuilder.Entity("Backend.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -212,6 +167,100 @@ namespace Backend.Migrations
                     b.ToTable("Messages");
                 });
 
+            modelBuilder.Entity("Backend.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ShippingFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShippingMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Ward")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Backend.Models.OrderDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
+                });
+
             modelBuilder.Entity("Backend.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -223,9 +272,6 @@ namespace Backend.Migrations
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("int");
@@ -262,9 +308,6 @@ namespace Backend.Migrations
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
@@ -276,14 +319,18 @@ namespace Backend.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", t =>
+                        {
+                            t.HasTrigger("TR_Products_UpdateStatus");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             Category = "cpu",
-                            CreatedAt = new DateTime(2025, 3, 22, 15, 31, 15, 130, DateTimeKind.Local).AddTicks(4177),
                             Description = "8-core, 16-thread processor",
                             ImageUrl = "/images/5800x.jpg",
                             Manufacturer = "AMD",
@@ -291,14 +338,12 @@ namespace Backend.Migrations
                             Price = 449.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-                            StockQuantity = 10,
-                            UpdatedAt = new DateTime(2025, 3, 22, 15, 31, 15, 130, DateTimeKind.Local).AddTicks(4189)
+                            StockQuantity = 10
                         },
                         new
                         {
                             Id = 2,
                             Category = "gpu",
-                            CreatedAt = new DateTime(2025, 3, 22, 15, 31, 15, 130, DateTimeKind.Local).AddTicks(4195),
                             Description = "10GB GDDR6X Graphics Card",
                             ImageUrl = "/images/3080.jpg",
                             Manufacturer = "NVIDIA",
@@ -306,14 +351,12 @@ namespace Backend.Migrations
                             Price = 699.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-                            StockQuantity = 5,
-                            UpdatedAt = new DateTime(2025, 3, 22, 15, 31, 15, 130, DateTimeKind.Local).AddTicks(4196)
+                            StockQuantity = 5
                         },
                         new
                         {
                             Id = 3,
                             Category = "motherboard",
-                            CreatedAt = new DateTime(2025, 3, 22, 15, 31, 15, 130, DateTimeKind.Local).AddTicks(4198),
                             Description = "AMD AM4 Gaming Motherboard",
                             ImageUrl = "/images/b550f.jpg",
                             Manufacturer = "ASUS",
@@ -321,8 +364,7 @@ namespace Backend.Migrations
                             Price = 189.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-                            StockQuantity = 15,
-                            UpdatedAt = new DateTime(2025, 3, 22, 15, 31, 15, 130, DateTimeKind.Local).AddTicks(4198)
+                            StockQuantity = 15
                         });
                 });
 
@@ -339,50 +381,6 @@ namespace Backend.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("ProductCategories");
-                });
-
-            modelBuilder.Entity("Backend.Models.PurchaseOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("SupplierId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("PurchaseOrders");
                 });
 
             modelBuilder.Entity("Backend.Models.Role", b =>
@@ -435,7 +433,7 @@ namespace Backend.Migrations
                     b.ToTable("Sales");
                 });
 
-            modelBuilder.Entity("Backend.Models.Supplier", b =>
+            modelBuilder.Entity("Backend.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -444,39 +442,7 @@ namespace Backend.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Suppliers");
-                });
-
-            modelBuilder.Entity("Backend.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -487,6 +453,9 @@ namespace Backend.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
@@ -547,29 +516,6 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Backend.Models.InventoryTransaction", b =>
-                {
-                    b.HasOne("Backend.Models.Employee", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("Backend.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Models.PurchaseOrder", "PurchaseOrder")
-                        .WithMany("InventoryTransactions")
-                        .HasForeignKey("PurchaseOrderId");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("PurchaseOrder");
-                });
-
             modelBuilder.Entity("Backend.Models.Message", b =>
                 {
                     b.HasOne("Backend.Models.User", "Receiver")
@@ -587,6 +533,36 @@ namespace Backend.Migrations
                     b.Navigation("Receiver");
 
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("Backend.Models.Order", b =>
+                {
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.OrderDetail", b =>
+                {
+                    b.HasOne("Backend.Models.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Backend.Models.Product", b =>
@@ -630,29 +606,6 @@ namespace Backend.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Backend.Models.PurchaseOrder", b =>
-                {
-                    b.HasOne("Backend.Models.Employee", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("Backend.Models.Supplier", "Supplier")
-                        .WithMany("PurchaseOrders")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Models.Employee", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Supplier");
-
-                    b.Navigation("UpdatedBy");
-                });
-
             modelBuilder.Entity("Backend.Models.Cart", b =>
                 {
                     b.Navigation("CartProducts");
@@ -663,16 +616,16 @@ namespace Backend.Migrations
                     b.Navigation("ProductCategories");
                 });
 
+            modelBuilder.Entity("Backend.Models.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
             modelBuilder.Entity("Backend.Models.Product", b =>
                 {
                     b.Navigation("CartProducts");
 
                     b.Navigation("ProductCategories");
-                });
-
-            modelBuilder.Entity("Backend.Models.PurchaseOrder", b =>
-                {
-                    b.Navigation("InventoryTransactions");
                 });
 
             modelBuilder.Entity("Backend.Models.Role", b =>
@@ -683,11 +636,6 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Sale", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("Backend.Models.Supplier", b =>
-                {
-                    b.Navigation("PurchaseOrders");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
