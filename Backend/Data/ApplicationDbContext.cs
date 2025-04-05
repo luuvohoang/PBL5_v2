@@ -26,7 +26,7 @@ namespace Backend.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.ConfigureWarnings(warnings =>
-                warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+                warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.SaveChangesFailed));
 
             base.OnConfiguring(optionsBuilder);
         }
