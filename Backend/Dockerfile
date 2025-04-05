@@ -4,20 +4,12 @@ WORKDIR /source
 # Copy everything
 COPY . .
 
-# Restore dependencies
+# Restore and build
 RUN dotnet restore "./Backend.csproj" --verbosity normal
 
-# Build
-RUN dotnet build "./Backend.csproj" \
-    --configuration Release \
-    --no-restore \
-    --verbosity normal \
-    -o /app/build
-
-# Publish
+# Publish (removed --no-build flag)
 RUN dotnet publish "./Backend.csproj" \
     --configuration Release \
-    --no-build \
     --verbosity normal \
     -o /app/publish
 
