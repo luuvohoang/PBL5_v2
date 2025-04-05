@@ -8,5 +8,10 @@ namespace Backend.Models
         public string PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public virtual Employee? Employee { get; set; }
+<<<<<<< HEAD
+=======
+        public string? PhoneNumber { get; set; }
+        public string? Address { get; set; }
+>>>>>>> fixbug
     }
 }

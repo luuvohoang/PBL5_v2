@@ -20,6 +20,11 @@ namespace Backend.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Message> Messages { get; set; }
+<<<<<<< HEAD
+=======
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+>>>>>>> fixbug
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -119,6 +124,26 @@ namespace Backend.Data
                 .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+<<<<<<< HEAD
+=======
+            // Configure Order relationships
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.Order)
+                .WithMany(o => o.OrderDetails)
+                .HasForeignKey(od => od.OrderId);
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.Product)
+                .WithMany()
+                .HasForeignKey(od => od.ProductId);
+
+>>>>>>> fixbug
             // Seed initial data
             modelBuilder.Entity<Product>().HasData(
                 new Product

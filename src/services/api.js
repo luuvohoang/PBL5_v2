@@ -203,10 +203,114 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, productData) => {
     try {
-        const response = await axios.put(`${API_URL}/products/${id}`, productData);
+        // Convert FormData to plain object for debugging
+        const formDataObject = {};
+        for (let pair of productData.entries()) {
+            formDataObject[pair[0]] = pair[1];
+        }
+        console.log('Sending data:', formDataObject);
+
+        const response = await axios.put(`${API_URL}/products/${id}`, productData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
         return response.data;
     } catch (error) {
-        console.error('UpdateProduct API error:', error.response?.data || error.message);
+        console.error('Full error details:', error.response?.data);
+        throw error;
+    }
+};
+
+export const addProduct = async (productData) => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const formData = new FormData();
+
+        // Add all basic fields
+        formData.append('name', productData.name);
+        formData.append('description', productData.description);
+        formData.append('price', productData.price);
+        formData.append('category', productData.category);
+        formData.append('stockQuantity', productData.stockQuantity);
+        formData.append('status', productData.status);
+        formData.append('manufacturer', productData.manufacturer);
+
+        // Add image file if exists
+        if (productData.imageFile) {
+            formData.append('imageFile', productData.imageFile);
+            formData.append('imageUrl', `/images/${productData.imageFile.name}`);
+        }
+
+        // Add user information
+        if (user?.id) {
+            formData.append('createdById', user.id);
+            formData.append('updatedById', user.id);
+        }
+
+        const response = await axios.post(`${API_URL}/products`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('AddProduct API error:', error);
+        throw error;
+    }
+};
+
+export const updateUserProfile = async (userId, profileData) => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.put(`${API_URL}/users/${userId}/profile`, profileData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'UserRole': user?.role
+            }
+        });
+
+        if (response.data && response.data.user) {
+            // Trả về dữ liệu mới từ server
+            return response.data;
+        }
+        throw new Error('Invalid response format');
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        throw error;
+    }
+};
+
+export const getUserProfile = async (userId) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        throw error;
+    }
+};
+
+export const getUserOrders = async (userId) => {
+    try {
+        const response = await axios.get(`${API_URL}/orders/user/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user orders:', error);
+        throw error;
+    }
+};
+
+export const createOrder = async (orderData) => {
+    try {
+        const response = await axios.post(`${API_URL}/orders`, orderData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating order:', error.response?.data || error.message);
         throw error;
     }
 };

@@ -38,3 +38,10 @@ project1.sln
 
 # Ignore package-lock.json
 package-lock.json
+
+# Thêm vào file .gitignore
+appsettings.json
+appsettings.*.json
+
+# Nhưng vẫn giữ lại file mẫu
+!appsettings.example.json
