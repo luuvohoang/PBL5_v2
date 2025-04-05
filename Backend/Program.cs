@@ -88,8 +88,8 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins(
             "http://localhost:3000",
-            "https://pbl5-v2.onrender.com",
-            // "https://your-frontend-domain.onrender.com" // Replace with your frontend URL
+            "https://pbl5-v2.onrender.com"
+        // "https://your-frontend-domain.onrender.com" // Replace with your frontend URL
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
