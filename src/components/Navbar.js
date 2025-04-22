@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '../services/api';
+import { logout, searchProducts } from '../services/api';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
     const [showCategories, setShowCategories] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const handleLogout = () => {
         logout();
@@ -17,20 +18,13 @@ const Navbar = () => {
 
         switch (user.role) {
             case 'Admin':
-                return (
-                    <>
-                        <Link to="/employees">Employee Management</Link>
-                        <Link to="/customers">Customer Management</Link>
-                        <Link to="/ProductManagement">Product Management</Link>
-                        <Link to="/chat">Staff Chat</Link>
-                    </>
-                );
             case 'Manager':
                 return (
                     <>
                         <Link to="/employees">Employee Management</Link>
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
+                        <Link to="/admin/orders">Order Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
@@ -39,6 +33,7 @@ const Navbar = () => {
                     <>
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
+                        <Link to="/admin/orders">Order Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
@@ -46,6 +41,17 @@ const Navbar = () => {
                 return <Link to="/customer-chat">Support Chat</Link>;
             default:
                 return null;
+        }
+    };
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!searchTerm.trim()) return;
+
+        try {
+            navigate(`/products/search?q=${encodeURIComponent(searchTerm.trim())}`);
+        } catch (error) {
+            console.error('Search error:', error);
         }
     };
 
@@ -66,10 +72,17 @@ const Navbar = () => {
             <nav className="navbar-main">
                 <div className="container">
                     <Link to="/" className="logo">PC Parts Store</Link>
-                    <div className="search-bar">
-                        <input type="text" placeholder="Search products..." />
-                        <button><i className="fas fa-search"></i></button>
-                    </div>
+                    <form className="search-bar" onSubmit={handleSearch}>
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button type="submit">
+                            <i className="fas fa-search"></i>
+                        </button>
+                    </form>
                     <div className="nav-actions">
                         {user ? (
                             <>

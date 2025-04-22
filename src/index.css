@@ -502,6 +502,36 @@ code {
     gap: 1.5rem;
 }
 
+/* Manufacturer Filter and Sort Container */
+.filters-container {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.manufacturer-filter,
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.manufacturer-filter select,
+.sort-container select {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    background-color: white;
+    min-width: 150px;
+}
+
+.manufacturer-filter label,
+.sort-container label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     .contact-info {

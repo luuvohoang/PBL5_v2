@@ -1,127 +1,155 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getProducts, deleteProduct } from '../services/api';
+import { getProducts, searchProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
-import PriceRangeFilter from '../components/PriceRangeFilter';
 import '../styles/Products.css';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchParams] = useSearchParams();
+    const searchQuery = searchParams.get('q');
     const category = searchParams.get('category');
-    const userRole = localStorage.getItem('userRole');
-
-    const handlePriceFilter = (range) => {
-        if (!range) {
-            setFilteredProducts(products);
-            return;
-        }
-        const filtered = products.filter(product => {
-            const price = parseFloat(product.price);
-            return price >= range.min && price <= range.max;
-        });
-        setFilteredProducts(filtered);
-    };
-
-    const handleSort = (sortType) => {
-        const sorted = [...filteredProducts];
-        switch (sortType) {
-            case 'price-asc':
-                sorted.sort((a, b) => a.price - b.price);
-                break;
-            case 'price-desc':
-                sorted.sort((a, b) => b.price - a.price);
-                break;
-            case 'name-asc':
-                sorted.sort((a, b) => a.name.localeCompare(b.name));
-                break;
-            case 'name-desc':
-                sorted.sort((a, b) => b.name.localeCompare(a.name));
-                break;
-            default:
-                break;
-        }
-        setFilteredProducts(sorted);
-    };
-
-    const handleDelete = async (productId) => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
-            try {
-                await deleteProduct(productId);
-                setProducts(products.filter(p => p.id !== productId));
-                setFilteredProducts(filteredProducts.filter(p => p.id !== productId));
-            } catch (err) {
-                setError('Failed to delete product');
-                console.error('Error:', err);
-            }
-        }
-    };
+    const [sortType, setSortType] = useState('');
+    const [selectedManufacturer, setSelectedManufacturer] = useState('');
+    const [manufacturers, setManufacturers] = useState([]);
 
     useEffect(() => {
         loadProducts();
-    }, [category]);
+        // Reset manufacturer filter when category changes
+        setSelectedManufacturer('');
+    }, [searchQuery, category]);
+
+    useEffect(() => {
+        // Extract unique manufacturers from products
+        if (products.length > 0) {
+            const uniqueManufacturers = [...new Set(products.map(p => p.manufacturer))];
+            setManufacturers(uniqueManufacturers);
+        }
+    }, [products]);
 
     const loadProducts = async () => {
         try {
             setLoading(true);
-            const data = await getProducts(category);
+            let data;
+            
+            if (searchQuery) {
+                data = await searchProducts(searchQuery);
+            } else {
+                data = await getProducts(category);
+            }
+            
+            // Thêm kiểm tra data
+            if (!data) {
+                setProducts([]);
+                setError('No products found');
+                return;
+            }
+            
             setProducts(data);
-            setFilteredProducts(data);
         } catch (err) {
             setError('Failed to load products');
             console.error('Error:', err);
+            setProducts([]); // Set empty array on error
         } finally {
             setLoading(false);
         }
     };
 
+    const getSortedProducts = () => {
+        if (!products) return [];
+        
+        let filteredProducts = [...products];
+        
+        // Filter by manufacturer if selected
+        if (selectedManufacturer) {
+            filteredProducts = filteredProducts.filter(
+                product => product.manufacturer === selectedManufacturer
+            );
+        }
+
+        // Sort products
+        if (sortType) {
+            filteredProducts.sort((a, b) => {
+                switch (sortType) {
+                    case 'price-asc':
+                        return a.price - b.price;
+                    case 'price-desc':
+                        return b.price - a.price;
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        return filteredProducts;
+    };
+
     if (loading) return <div className="container">Loading...</div>;
-    if (error) return <div className="container">{error}</div>;
+
+    const sortedProducts = getSortedProducts();
 
     return (
-        <div className="products-layout">
-            <aside className="products-sidebar">
-                <PriceRangeFilter onFilterChange={handlePriceFilter} />
-            </aside>
-            
-            <main className="products-main">
-                <div className="products-header">
-                    <h1>{category ? `${category.toUpperCase()}` : 'All Products'}</h1>
-                    <div className="products-meta">
-                        <span>{filteredProducts.length} products</span>
-                        <select onChange={(e) => handleSort(e.target.value)} className="sort-select">
-                            <option value="">Sort by</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                            <option value="name-asc">Name: A-Z</option>
-                            <option value="name-desc">Name: Z-A</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div className="products-grid">
-                    {filteredProducts.map(product => (
-                        <div key={product.id} className="product-wrapper">
-                            <ProductCard product={product} />
-                            {(['Admin', 'Manager', 'Staff'].includes(userRole)) && (
-                                <button 
-                                    className="delete-button"
-                                    onClick={() => handleDelete(product.id)}
-                                >
-                                    Delete
-                                </button>
-                            )}
+        <div className="products-container">
+            <div className="products-header">
+                {searchQuery ? (
+                    <>
+                        <h1>Search Results for "{searchQuery}"</h1>
+                        <div className="search-summary">
+                            Found {sortedProducts.length} product(s)
                         </div>
+                    </>
+                ) : (
+                    <h1>{category ? `${category.toUpperCase()}` : 'All Products'}</h1>
+                )}
+
+                {sortedProducts.length > 0 && (
+                    <div className="products-meta">
+                        <div className="filters-container">
+                            <div className="manufacturer-filter">
+                                <label>Manufacturer:</label>
+                                <select 
+                                    value={selectedManufacturer} 
+                                    onChange={(e) => setSelectedManufacturer(e.target.value)}
+                                >
+                                    <option value="">All Manufacturers</option>
+                                    {manufacturers.map((manufacturer) => (
+                                        <option key={manufacturer} value={manufacturer}>
+                                            {manufacturer}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="sort-container">
+                                <label>Sort by:</label>
+                                <select 
+                                    value={sortType} 
+                                    onChange={(e) => setSortType(e.target.value)}
+                                >
+                                    <option value="">Default</option>
+                                    <option value="price-asc">Price: Low to High</option>
+                                    <option value="price-desc">Price: High to Low</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {error ? (
+                <div className="error-message">{error}</div>
+            ) : sortedProducts.length === 0 ? (
+                <div className="no-results">
+                    No products found {searchQuery ? `for your search "${searchQuery}"` : ''}
+                </div>
+            ) : (
+                <div className="products-grid">
+                    {sortedProducts.map(product => (
+                        <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
-            </main>
-
-            <aside className="products-banner">
-                {/* Add your banner content here */}
-            </aside>
+            )}
         </div>
     );
 };

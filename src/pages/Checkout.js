@@ -209,7 +209,7 @@ const Checkout = () => {
 
                 <form onSubmit={handleSubmit} className="checkout-form">
                     <h2>Shipping Information</h2>
-
+                    
                     <div className="form-group">
                         <label>Province/City</label>
                         <select value={selectedProvince} onChange={handleProvinceChange} required>

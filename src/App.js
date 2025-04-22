@@ -19,6 +19,7 @@ import ProductManagement from './pages/ProductManagement';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import Orders from './pages/Orders';
+import AdminOrders from './pages/AdminOrders';
 
 function App() {
     return (
@@ -29,6 +30,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/products" element={<Products />} />
+                        <Route path="/products/search" element={<Products />} />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
@@ -91,6 +93,15 @@ function App() {
                         <Route path="/checkout" element={<Checkout />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/orders" element={<Orders />} />
+                        <Route
+                            path="/admin/orders"
+                            element={
+                                <PrivateRoute
+                                    element={<AdminOrders />}
+                                    allowedRoles={['Admin', 'Manager', 'Staff']}
+                                />
+                            }
+                        />
                     </Routes>
                 </div>
             </Router>

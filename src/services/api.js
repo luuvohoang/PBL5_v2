@@ -314,3 +314,41 @@ export const createOrder = async (orderData) => {
         throw error;
     }
 };
+
+export const searchProducts = async (searchTerm) => {
+    try {
+        // Thay vì gọi API search riêng, sẽ lấy tất cả sản phẩm và filter
+        const response = await axios.get(`${API_URL}/products`);
+        const products = response.data;
+        
+        // Lọc sản phẩm theo searchTerm
+        return products.filter(product => 
+            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    } catch (error) {
+        console.error('Error searching products:', error);
+        throw error;
+    }
+};
+
+export const getAllOrders = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/orders/all`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all orders:', error);
+        throw error;
+    }
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+    try {
+        const response = await axios.put(`${API_URL}/orders/${orderId}`, { status });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        throw error;
+    }
+};
