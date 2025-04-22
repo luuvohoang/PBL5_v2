@@ -45,5 +45,10 @@ export const calculateShippingFee = async (params) => {
             'shop_id': GHN_SHOP_ID
         }
     });
-    return response.data.data;
+    // Convert VND to USD (assuming 23000 VND = 1 USD)
+    const feeInUSD = response.data.data.total / 23000;
+    return {
+        ...response.data.data,
+        total: feeInUSD
+    };
 };

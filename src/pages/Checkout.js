@@ -111,7 +111,7 @@ const Checkout = () => {
     const total = cart.reduce((sum, item) => {
         const itemPrice = item.sale ? item.price * (1 - item.sale.discountPercent / 100) : item.price;
         return sum + itemPrice * item.quantity;
-    }, 0) + (shippingFee / 23000); // Convert shipping fee from VND to USD
+    }, 0) + shippingFee; // Remove VND conversion
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -147,7 +147,7 @@ const Checkout = () => {
                 district: selectedDistrictName,
                 ward: selectedWardName,
                 shippingMethod: shippingMethod === '1' ? 'Express' : shippingMethod === '2' ? 'Standard' : 'Saving',
-                shippingFee: shippingFee,
+                shippingFee: shippingFee, // Already in USD
                 orderDetails: cart.map(item => ({
                     productId: item.productId,
                     quantity: item.quantity,
@@ -209,7 +209,7 @@ const Checkout = () => {
 
                 <form onSubmit={handleSubmit} className="checkout-form">
                     <h2>Shipping Information</h2>
-                    
+
                     <div className="form-group">
                         <label>Province/City</label>
                         <select value={selectedProvince} onChange={handleProvinceChange} required>
@@ -264,7 +264,7 @@ const Checkout = () => {
                     </div>
 
                     <div className="shipping-fee">
-                        <p>Shipping Fee: ${(shippingFee / 23000).toFixed(2)}</p>
+                        <p>Shipping Fee: ${shippingFee.toFixed(2)}</p>
                     </div>
 
                     <div className="form-group">
