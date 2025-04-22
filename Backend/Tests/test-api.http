@@ -1,0 +1,10 @@
+@baseUrl = http://localhost:5000/api
+
+### Test Database Connection
+GET {{baseUrl}}/products/test-connection
+
+### Test Get All Products
+GET {{baseUrl}}/products
+
+### Test Get Products by Category
+GET {{baseUrl}}/products?category=cpu
