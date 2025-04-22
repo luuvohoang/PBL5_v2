@@ -20,6 +20,9 @@ import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import Orders from './pages/Orders';
 import AdminOrders from './pages/AdminOrders';
+import Dashboard from './pages/Dashboard';
+import ErrorBoundary from './components/ErrorBoundary';
+import './styles/common-animations.css';
 
 function App() {
     return (
@@ -97,7 +100,24 @@ function App() {
                             path="/admin/orders"
                             element={
                                 <PrivateRoute
-                                    element={<AdminOrders />}
+                                    element={
+                                        <ErrorBoundary>
+                                            <AdminOrders />
+                                        </ErrorBoundary>
+                                    }
+                                    allowedRoles={['Admin', 'Manager', 'Staff']}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/dashboard"
+                            element={
+                                <PrivateRoute
+                                    element={
+                                        <ErrorBoundary>
+                                            <Dashboard />
+                                        </ErrorBoundary>
+                                    }
                                     allowedRoles={['Admin', 'Manager', 'Staff']}
                                 />
                             }

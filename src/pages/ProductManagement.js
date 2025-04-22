@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getProducts, addProduct, deleteProduct } from '../services/api';
 import '../styles/ProductManagement.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ProductManagement = () => {
     const [products, setProducts] = useState([]);
@@ -18,6 +19,7 @@ const ProductManagement = () => {
     });
     const [isAdding, setIsAdding] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchProducts();
@@ -30,6 +32,8 @@ const ProductManagement = () => {
         } catch (error) {
             console.error('Error fetching products:', error);
             setProducts([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -108,6 +112,8 @@ const ProductManagement = () => {
             }
         }
     };
+
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div className="product-management-container">

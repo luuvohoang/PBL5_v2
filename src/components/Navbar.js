@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout, searchProducts } from '../services/api';
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
     const [showCategories, setShowCategories] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const { cartCount } = useCart();
 
     const handleLogout = () => {
         logout();
@@ -21,6 +23,7 @@ const Navbar = () => {
             case 'Manager':
                 return (
                     <>
+                        <Link to="/dashboard">Dashboard</Link>
                         <Link to="/employees">Employee Management</Link>
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
@@ -31,6 +34,7 @@ const Navbar = () => {
             case 'Staff':
                 return (
                     <>
+                        <Link to="/dashboard">Dashboard</Link>
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
                         <Link to="/admin/orders">Order Management</Link>
@@ -99,7 +103,9 @@ const Navbar = () => {
                         )}
                         <Link to="/cart" className="cart-icon">
                             <i className="fas fa-shopping-cart"></i>
-                            <span className="cart-count">0</span>
+                            {cartCount > 0 && (
+                                <span className="cart-count">{cartCount}</span>
+                            )}
                         </Link>
                     </div>
                 </div>

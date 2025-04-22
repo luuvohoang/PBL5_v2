@@ -335,7 +335,13 @@ export const searchProducts = async (searchTerm) => {
 
 export const getAllOrders = async () => {
     try {
-        const response = await axios.get(`${API_URL}/orders/all`);
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.get(`${API_URL}/orders/admin/all`, {
+            headers: {
+                'Authorization': `Bearer ${user?.token}`,
+                'UserRole': user?.role
+            }
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching all orders:', error);
@@ -343,12 +349,80 @@ export const getAllOrders = async () => {
     }
 };
 
-export const updateOrderStatus = async (orderId, status) => {
+export const updateOrderStatus = async (orderId, status, note) => {
     try {
-        const response = await axios.put(`${API_URL}/orders/${orderId}`, { status });
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.put(`${API_URL}/orders/${orderId}/status`, {
+            status,
+            note,
+            updatedAt: new Date().toISOString(),
+            updatedBy: user?.id
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user?.token}`,
+                'UserRole': user?.role,
+                'Content-Type': 'application/json'
+            }
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating order status:', error);
         throw error;
+    }
+};
+
+export const getDashboardStats = async () => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.get(`${API_URL}/orders/stats`, {
+            headers: {
+                'Authorization': `Bearer ${user?.token}`,
+                'UserRole': user?.role
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        return {
+            totalRevenue: 0,
+            totalOrders: 0,
+            averageOrderValue: 0,
+            activeCustomers: 0,
+            revenueChange: 0,
+            ordersChange: 0
+        };
+    }
+};
+
+export const getRevenueByPeriod = async (period) => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.get(`${API_URL}/orders/revenue`, {
+            params: { period },
+            headers: {
+                'Authorization': `Bearer ${user?.token}`,
+                'UserRole': user?.role
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching revenue data:', error);
+        return [];
+    }
+};
+
+export const getTopProducts = async () => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const response = await axios.get(`${API_URL}/orders/top-products`, {
+            headers: {
+                'Authorization': `Bearer ${user?.token}`,
+                'UserRole': user?.role
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching top products:', error);
+        return [];
     }
 };

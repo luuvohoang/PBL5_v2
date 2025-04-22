@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getCustomers } from '../services/api';
 import '../styles/Customers.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Customers = () => {
     const [customers, setCustomers] = useState([]);
@@ -21,7 +22,7 @@ const Customers = () => {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div className="customer-container">
