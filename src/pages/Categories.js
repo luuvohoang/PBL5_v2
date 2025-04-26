@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Categories = () => {
     const fixedCategories = ['cpu', 'gpu', 'motherboard', 'ram'];
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    if (loading) return <div className="container">Loading...</div>;
+    if (loading) return <LoadingSpinner />;
     if (error) return <div className="container">{error}</div>;
 
     return (
-        <div className="container">
+        <div className="categories-container">
             <h1>Categories</h1>
             <div className="grid">
                 {fixedCategories.map((category) => (

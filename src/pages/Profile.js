@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { updateUserProfile, getUserProfile } from '../services/api';
 import '../styles/Profile.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Profile = () => {
         address: ''
     });
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (user?.id) {
@@ -30,6 +32,8 @@ const Profile = () => {
             });
         } catch (error) {
             setMessage('Failed to load user profile');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -63,6 +67,8 @@ const Profile = () => {
         navigate('/login');
         return null;
     }
+
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div className="profile-page">

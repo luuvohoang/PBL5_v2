@@ -6,6 +6,7 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
+    const [cartCount, setCartCount] = useState(0);
     const user = JSON.parse(localStorage.getItem('user'));
 
     const fetchCart = useCallback(async () => {
@@ -23,6 +24,11 @@ export const CartProvider = ({ children }) => {
             fetchCart();
         }
     }, [user, fetchCart]);
+
+    useEffect(() => {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        setCartCount(totalItems);
+    }, [cart]);
 
     const addToCart = async (product) => {
         if (!user) {
@@ -64,7 +70,7 @@ export const CartProvider = ({ children }) => {
     };
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity }}>
+        <CartContext.Provider value={{ cart, cartCount, addToCart, removeFromCart, updateQuantity }}>
             {children}
         </CartContext.Provider>
     );

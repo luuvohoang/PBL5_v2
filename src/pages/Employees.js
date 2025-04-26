@@ -3,6 +3,7 @@ import { getEmployees, deleteEmployee, updateEmployee, createEmployee } from '..
 import '../styles/Employees.css';
 import EmployeeForm from '../components/EmployeeForm';
 import CreateEmployeeForm from '../components/CreateEmployeeForm';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Employees = () => {
     const [employees, setEmployees] = useState([]);
@@ -75,7 +76,7 @@ const Employees = () => {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div className="employee-container">

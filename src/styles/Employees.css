@@ -1,7 +1,25 @@
 .employee-container {
-    padding: 20px;
-    max-width: 1200px;
+    opacity: 1;
+    animation: fadeIn 0.3s ease-in;
+    padding: 2rem;
+    max-width: 1400px;
     margin: 0 auto;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .employee-header {
@@ -33,6 +51,10 @@
     color: #333;
 }
 
+.employee-table tr {
+    transition: background-color 0.2s ease;
+}
+
 .employee-table tr:hover {
     background-color: #f8f8f8;
 }
@@ -42,6 +64,10 @@
     gap: 10px;
 }
 
+.employee-actions button {
+    transition: all 0.2s ease;
+}
+
 .btn-delete {
     padding: 6px 12px;
     background-color: #dc3545;
@@ -49,7 +75,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .btn-delete:hover {
@@ -63,9 +89,18 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .btn-edit:hover {
     background-color: #0056b3;
+}
+
+/* Form animation */
+.employee-form-overlay {
+    animation: fadeIn 0.3s ease;
+}
+
+.employee-form {
+    animation: slideIn 0.3s ease-out;
 }

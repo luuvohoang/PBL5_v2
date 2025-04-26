@@ -1,6 +1,8 @@
 .product-management-container {
+    opacity: 1;
+    animation: fadeIn 0.3s ease-in;
     padding: 2rem;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -50,11 +52,24 @@
     gap: 2rem;
 }
 
+.products-grid {
+    animation: slideUp 0.3s ease-out;
+}
+
 .product-item {
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .product-item img {
