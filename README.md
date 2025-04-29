@@ -39,3 +39,12 @@ npm start
 
 ## Note
 Make sure to ignore `appsettings.json` in git as it contains sensitive information. Use `appsettings.example.json` as a template.
+
+update 20/4
+thêm các thuộc tính cho order 
+ALTER TABLE Orders
+ADD StatusNote NVARCHAR(255),
+    UpdatedAt DATETIME,
+    UpdatedById INT;
+
+- dotnet add package SendGrid

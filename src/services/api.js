@@ -338,48 +338,51 @@ export const searchProducts = async (searchTerm) => {
 export const getAllOrders = async () => {
     try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.get(`${API_URL}/orders/admin/all`, {
-            headers: {
-                'Authorization': `Bearer ${user?.token}`,
-                'UserRole': user?.role
-            }
-        });
+        if (!user || user.role !== 'Admin') {
+            throw new Error('User not authenticated');
+        }
+
+        const response = await axios.get(`${API_URL}/orders/admin/all`);
         return response.data;
     } catch (error) {
-        console.error('Error fetching all orders:', error);
+        console.error('Error in getAllOrders:', error);
         throw error;
     }
 };
 
 export const updateOrderStatus = async (orderId, status, note) => {
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.put(`${API_URL}/orders/${orderId}/status`, {
-            status,
-            note,
-            updatedAt: new Date().toISOString(),
-            updatedBy: user?.id
-        }, {
+        const response = await axios({
+            method: 'put',
+            url: `${API_URL}/orders/${orderId}/status`,
+            data: {
+                status: status,
+                note: note || ''
+            },
             headers: {
-                'Authorization': `Bearer ${user?.token}`,
-                'UserRole': user?.role,
                 'Content-Type': 'application/json'
             }
         });
+
+        if (!response.data) {
+            throw new Error('No response from server');
+        }
+
         return response.data;
     } catch (error) {
-        console.error('Error updating order status:', error);
+        console.error('Update order status error:', {
+            message: error.message,
+            response: error.response?.data
+        });
         throw error;
     }
 };
 
 export const getDashboardStats = async () => {
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.get(`${API_URL}/orders/stats`, {
+        const response = await axios.get(`${API_URL}/orders/admin/dashboard-stats`, {
             headers: {
-                'Authorization': `Bearer ${user?.token}`,
-                'UserRole': user?.role
+                'Content-Type': 'application/json'
             }
         });
         return response.data;
@@ -398,15 +401,9 @@ export const getDashboardStats = async () => {
 
 export const getRevenueByPeriod = async (period) => {
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.get(`${API_URL}/orders/revenue`, {
-            params: { period },
-            headers: {
-                'Authorization': `Bearer ${user?.token}`,
-                'UserRole': user?.role
-            }
-        });
-        return response.data;
+        const response = await axios.get(`${API_URL}/orders/admin/revenue/${period}`);
+        console.log('Revenue data:', response.data); // For debugging
+        return response.data.data || [];
     } catch (error) {
         console.error('Error fetching revenue data:', error);
         return [];
@@ -415,8 +412,22 @@ export const getRevenueByPeriod = async (period) => {
 
 export const getTopProducts = async () => {
     try {
+        const response = await axios.get(`${API_URL}/orders/admin/top-products`, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching top products:', error);
+        return [];
+    }
+};
+
+export const getOrderStats = async () => {
+    try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const response = await axios.get(`${API_URL}/orders/top-products`, {
+        const response = await axios.get(`${API_URL}/orders/admin/stats`, {
             headers: {
                 'Authorization': `Bearer ${user?.token}`,
                 'UserRole': user?.role
@@ -424,7 +435,42 @@ export const getTopProducts = async () => {
         });
         return response.data;
     } catch (error) {
-        console.error('Error fetching top products:', error);
-        return [];
+        console.error('Error fetching order stats:', error);
+        return {
+            pendingOrders: 0,
+            processingOrders: 0,
+            shippingOrders: 0,
+            deliveredOrders: 0,
+            cancelledOrders: 0
+        };
+    }
+};
+
+export const forgotPassword = async (email) => {
+    try {
+        const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+        return response.data;
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        throw error;
+    }
+};
+
+export const resetPassword = async (token, newPassword) => {
+    try {
+        const response = await axios.post(`${API_URL}/auth/reset-password`, {
+            token: token.trim(), // Remove any whitespace
+            newPassword
+        });
+        return response.data;
+    } catch (error) {
+        // Enhanced error handling
+        if (error.response?.status === 400) {
+            throw new Error(error.response.data || 'Invalid or expired reset token');
+        }
+        if (error.response?.status === 404) {
+            throw new Error('Reset token not found');
+        }
+        throw new Error('An error occurred while resetting the password');
     }
 };

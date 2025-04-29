@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllOrders, updateOrderStatus } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/AdminOrders.css';
+import { useNavigate } from 'react-router-dom';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -9,35 +10,72 @@ const AdminOrders = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [statusNote, setStatusNote] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchOrders();
-    }, []);
+        try {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                navigate('/login');
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            if (!user || user.role !== 'Admin') {
+                console.log('Insufficient permissions - Admin access required');
+                localStorage.removeItem('user');
+                navigate('/login');
+                return;
+            }
+            fetchOrders();
+        } catch (error) {
+            console.error('Error checking authentication:', error);
+            localStorage.removeItem('user');
+            navigate('/login');
+        }
+    }, [navigate]);
 
     const fetchOrders = async () => {
         try {
             const data = await getAllOrders();
+            if (!data) {
+                throw new Error('No data received');
+            }
             setOrders(Array.isArray(data) ? data : []);
-            setLoading(false);
         } catch (error) {
             console.error('Error fetching orders:', error);
+            if (error.message.includes('User not authenticated')) {
+                navigate('/login');
+            }
+        } finally {
             setLoading(false);
         }
     };
 
     const handleStatusUpdate = async (orderId, newStatus) => {
         try {
-            await updateOrderStatus(orderId, newStatus, statusNote);
-            setOrders(orders.map(order => 
-                order.id === orderId 
-                    ? { ...order, status: newStatus, statusNote: statusNote } 
+            const updatedOrder = await updateOrderStatus(orderId, newStatus, statusNote);
+
+            if (!updatedOrder) {
+                throw new Error('Failed to update order status');
+            }
+
+            setOrders(prevOrders => prevOrders.map(order =>
+                order.id === orderId
+                    ? {
+                        ...order,
+                        status: updatedOrder.status,
+                        statusNote: updatedOrder.statusNote,
+                        updatedAt: updatedOrder.updatedAt
+                    }
                     : order
             ));
+
             setStatusNote('');
-            alert('Order status updated successfully');
+            alert(updatedOrder.message || 'Order status updated successfully');
         } catch (error) {
             console.error('Error updating order status:', error);
-            alert('Failed to update order status');
+            alert(error.response?.data?.message || 'Failed to update order status');
         }
     };
 
@@ -45,8 +83,8 @@ const AdminOrders = () => {
         setSelectedOrder(order);
     };
 
-    const filteredOrders = filterStatus === 'all' 
-        ? orders 
+    const filteredOrders = filterStatus === 'all'
+        ? orders
         : orders.filter(order => order.status === filterStatus);
 
     if (loading) return <LoadingSpinner />;
@@ -54,10 +92,10 @@ const AdminOrders = () => {
     return (
         <div className="admin-orders-container">
             <h1>Order Management</h1>
-            
+
             <div className="order-filters">
-                <select 
-                    value={filterStatus} 
+                <select
+                    value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className="status-filter"
                 >
@@ -123,7 +161,7 @@ const AdminOrders = () => {
                             <p><strong>Email:</strong> {selectedOrder.userEmail}</p>
                             <p><strong>Phone:</strong> {selectedOrder.phoneNumber}</p>
                         </div>
-                        
+
                         <div className="details-section">
                             <h3>Shipping Information</h3>
                             <p><strong>Address:</strong> {selectedOrder.shippingAddress}</p>
@@ -174,7 +212,7 @@ const AdminOrders = () => {
                                 <button onClick={() => handleStatusUpdate(selectedOrder.id, 'Delivered')}>
                                     Mark as Delivered
                                 </button>
-                                <button 
+                                <button
                                     className="cancel-btn"
                                     onClick={() => handleStatusUpdate(selectedOrder.id, 'Cancelled')}
                                 >

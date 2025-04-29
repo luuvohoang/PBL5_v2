@@ -22,7 +22,9 @@ import Orders from './pages/Orders';
 import AdminOrders from './pages/AdminOrders';
 import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
+import ResetPassword from './pages/ResetPassword';
 import './styles/common-animations.css';
+import './styles/auth.css';
 
 function App() {
     return (
@@ -122,6 +124,7 @@ function App() {
                                 />
                             }
                         />
+                        <Route path="/reset-password" element={<ResetPassword />} />
                     </Routes>
                 </div>
             </Router>
