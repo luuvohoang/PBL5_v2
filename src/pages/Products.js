@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getProducts, searchProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
+import Pagination from '../components/Pagination';
 import '../styles/Products.css';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [searchParams] = useSearchParams();
     const searchQuery = searchParams.get('q');
     const category = searchParams.get('category');
@@ -19,7 +22,7 @@ const Products = () => {
         loadProducts();
         // Reset manufacturer filter when category changes
         setSelectedManufacturer('');
-    }, [searchQuery, category]);
+    }, [searchQuery, category, currentPage]);
 
     useEffect(() => {
         // Extract unique manufacturers from products
@@ -33,21 +36,22 @@ const Products = () => {
         try {
             setLoading(true);
             let data;
-            
+
             if (searchQuery) {
                 data = await searchProducts(searchQuery);
             } else {
-                data = await getProducts(category);
+                data = await getProducts(category, currentPage);
             }
-            
+
             // Thêm kiểm tra data
             if (!data) {
                 setProducts([]);
                 setError('No products found');
                 return;
             }
-            
-            setProducts(data);
+
+            setProducts(data.items);
+            setTotalPages(data.totalPages);
         } catch (err) {
             setError('Failed to load products');
             console.error('Error:', err);
@@ -59,9 +63,9 @@ const Products = () => {
 
     const getSortedProducts = () => {
         if (!products) return [];
-        
+
         let filteredProducts = [...products];
-        
+
         // Filter by manufacturer if selected
         if (selectedManufacturer) {
             filteredProducts = filteredProducts.filter(
@@ -84,6 +88,11 @@ const Products = () => {
         }
 
         return filteredProducts;
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo(0, 0);
     };
 
     if (loading) return <div className="container">Loading...</div>;
@@ -109,8 +118,8 @@ const Products = () => {
                         <div className="filters-container">
                             <div className="manufacturer-filter">
                                 <label>Manufacturer:</label>
-                                <select 
-                                    value={selectedManufacturer} 
+                                <select
+                                    value={selectedManufacturer}
                                     onChange={(e) => setSelectedManufacturer(e.target.value)}
                                 >
                                     <option value="">All Manufacturers</option>
@@ -123,8 +132,8 @@ const Products = () => {
                             </div>
                             <div className="sort-container">
                                 <label>Sort by:</label>
-                                <select 
-                                    value={sortType} 
+                                <select
+                                    value={sortType}
                                     onChange={(e) => setSortType(e.target.value)}
                                 >
                                     <option value="">Default</option>
@@ -150,6 +159,12 @@ const Products = () => {
                     ))}
                 </div>
             )}
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     );
 };

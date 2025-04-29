@@ -19,12 +19,17 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts(string? category)
+        public async Task<ActionResult<PaginatedResponseDTO<ProductDTO>>> GetProducts(
+            string? category,
+            int page = 1,
+            int pageSize = 4)
         {
             try
             {
                 var query = _context.Products
-                    .Include(p => p.Sale)  // Include Sale information
+                    .Include(p => p.Sale)
+                    .Include(p => p.CreatedBy)
+                    .Include(p => p.UpdatedBy)
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(category))
@@ -32,7 +37,13 @@ namespace Backend.Controllers
                     query = query.Where(p => p.Category == category.ToLower());
                 }
 
-                var products = await query.ToListAsync();
+                var totalItems = await query.CountAsync();
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+                var products = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
                 var productDtos = products.Select(product => new ProductDTO
                 {
@@ -69,7 +80,16 @@ namespace Backend.Controllers
                     }
                 }).ToList();
 
-                return Ok(productDtos);
+                var response = new PaginatedResponseDTO<ProductDTO>
+                {
+                    Items = productDtos,
+                    TotalItems = totalItems,
+                    CurrentPage = page,
+                    TotalPages = totalPages,
+                    PageSize = pageSize
+                };
+
+                return Ok(response);
             }
             catch (Exception ex)
             {

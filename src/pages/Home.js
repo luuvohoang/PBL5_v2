@@ -10,7 +10,9 @@ const Home = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const products = await getProducts();
+                const response = await getProducts();
+                // Access the items array from the paginated response
+                const products = response.items;
                 // Get unique categories from products
                 const uniqueCategories = [...new Set(products.map(product => product.category))];
                 setCategories(uniqueCategories);

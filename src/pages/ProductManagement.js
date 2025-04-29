@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getProducts, addProduct, deleteProduct } from '../services/api';
 import '../styles/ProductManagement.css';
@@ -19,23 +19,33 @@ const ProductManagement = () => {
     });
     const [isAdding, setIsAdding] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [initialLoad, setInitialLoad] = useState(true);
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async (page) => {
         try {
-            const data = await getProducts();
-            setProducts(data || []);
+            const response = await getProducts(null, page);
+            setProducts(response.items || []);
+            setTotalPages(response.totalPages || 1);
         } catch (error) {
             console.error('Error fetching products:', error);
-            setProducts([]);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
+            setInitialLoad(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (initialLoad) {
+            fetchProducts(currentPage);
+        }
+    }, [initialLoad, currentPage, fetchProducts]);
+
+    const sortedProducts = useMemo(() => {
+        return [...products].sort((a, b) => a.name.localeCompare(b.name));
+    }, [products]);
 
     const handleInputChange = (e) => {
         setNewProduct({
@@ -94,7 +104,7 @@ const ProductManagement = () => {
             });
             setSelectedImage(null);
             setIsAdding(false);
-            fetchProducts();
+            fetchProducts(currentPage); // Direct call instead of handleRefresh
             alert('Product added successfully!');
         } catch (error) {
             console.error('Error adding product:', error);
@@ -106,14 +116,72 @@ const ProductManagement = () => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
                 await deleteProduct(id);
-                fetchProducts();
+                fetchProducts(currentPage); // Direct call instead of handleRefresh
             } catch (error) {
                 console.error('Error deleting product:', error);
             }
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    const handlePageChange = useCallback((newPage) => {
+        if (newPage !== currentPage) {
+            setCurrentPage(newPage);
+            setIsLoading(true);
+            fetchProducts(newPage);
+        }
+    }, [currentPage, fetchProducts]);
+
+    const ProductItem = React.memo(({ product, onDelete }) => {
+        const [imageError, setImageError] = useState(false);
+
+        // Use default image if imageUrl is null or loading fails
+        const imageUrl = imageError || !product.imageUrl ? '/placeholder-image.jpg' : product.imageUrl;
+
+        return (
+            <div className="product-item">
+                <div className="image-container">
+                    <img
+                        src={imageUrl}
+                        alt={product.name}
+                        onError={() => setImageError(true)}
+                        loading="lazy"
+                    />
+                </div>
+                <div className="product-details">
+                    <h3>{product.name}</h3>
+                    <p>${product.price}</p>
+                    <p>Category: {product.category}</p>
+                    <p>Stock: {product.stockQuantity}</p>
+                    <p>Status: {product.status}</p>
+                    <div className="product-actions">
+                        <Link to={`/products/edit/${product.id}`}>
+                            <button className="edit-button">Edit</button>
+                        </Link>
+                        <button
+                            className="delete-button"
+                            onClick={() => onDelete(product.id)}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    });
+
+    const renderProducts = useMemo(() => {
+        return sortedProducts.map((product) => (
+            <ProductItem
+                key={product.id}
+                product={product}
+                onDelete={handleDeleteProduct}
+            />
+        ));
+    }, [sortedProducts, handleDeleteProduct]);
+
+    if (initialLoad) {
+        return <div className="loading-container"><LoadingSpinner /></div>;
+    }
 
     return (
         <div className="product-management-container">
@@ -212,40 +280,43 @@ const ProductManagement = () => {
                 </form>
             )}
 
-            <div className="products-list">
-                {products && products.length > 0 ? (
-                    products.map((product) => (
-                        <div key={product.id} className="product-item">
-                            <img
-                                src={`./assets/${product.imageUrl}`}
-                                alt={product.name}
-                            />
-                            <div className="product-details">
-                                <h3>{product.name}</h3>
-                                <p>${product.price}</p>
-                                <p>Category: {product.category}</p>
-                                <p>Stock: {product.stockQuantity}</p>
-                                <p>Status: {product.status}</p>
-                                <div className="product-actions">
-                                    <Link to={`/products/edit/${product.id}`}>
-                                        <button className="edit-button">Edit</button>
-                                    </Link>
-                                    <button
-                                        className="delete-button"
-                                        onClick={() => handleDeleteProduct(product.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
+            {!initialLoad && (
+                <div className="products-wrapper">
+                    <div className="products-list">
+                        {renderProducts}
+                    </div>
+                    {totalPages > 1 && (
+                        <div className="pagination">
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                                <button
+                                    key={i + 1}
+                                    onClick={() => handlePageChange(i + 1)}
+                                    className={currentPage === i + 1 ? 'active' : ''}
+                                    disabled={isLoading}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
                         </div>
-                    ))
-                ) : (
+                    )}
+                </div>
+            )}
+
+            {isLoading && (
+                <div className="loading-indicator">
+                    <LoadingSpinner />
+                </div>
+            )}
+
+            {!isLoading && products.length === 0 && (
+                <div className="no-products">
                     <p>No products found</p>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };
 
-export default ProductManagement;
+export default React.memo(ProductManagement, (prevProps, nextProps) => {
+    return true;
+});

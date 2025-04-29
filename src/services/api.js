@@ -15,8 +15,10 @@ axios.interceptors.request.use(
 
 const API_URL = 'http://localhost:5000/api';  // Make sure this matches your backend URL
 
-export const getProducts = async (category) => {
-    const response = await axios.get(`${API_URL}/products${category ? `?category=${category}` : ''}`);
+export const getProducts = async (category, page = 1) => {
+    const response = await axios.get(
+        `${API_URL}/products?${category ? `category=${category}&` : ''}page=${page}`
+    );
     return response.data;
 };
 
@@ -320,9 +322,9 @@ export const searchProducts = async (searchTerm) => {
         // Thay vì gọi API search riêng, sẽ lấy tất cả sản phẩm và filter
         const response = await axios.get(`${API_URL}/products`);
         const products = response.data;
-        
+
         // Lọc sản phẩm theo searchTerm
-        return products.filter(product => 
+        return products.filter(product =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
             product.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())
