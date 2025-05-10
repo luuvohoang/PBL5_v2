@@ -23,6 +23,7 @@ import AdminOrders from './pages/AdminOrders';
 import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 import ResetPassword from './pages/ResetPassword';
+import ProductItemManagement from './pages/ProductItemManagement';
 import './styles/common-animations.css';
 import './styles/auth.css';
 
@@ -125,6 +126,7 @@ function App() {
                             }
                         />
                         <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route path="/products/:id/items" element={<ProductItemManagement />} />
                     </Routes>
                 </div>
             </Router>

@@ -19,13 +19,13 @@ const EditProduct = () => {
     };
 
     useEffect(() => {
-        loadProduct();
+        loadProductAndItems();
     }, [id]);
 
-    const loadProduct = async () => {
+    const loadProductAndItems = async () => {
         try {
-            const data = await getProductById(id);
-            setProduct(data);
+            const productData = await getProductById(id);
+            setProduct(productData);
         } catch (err) {
             setError('Failed to load product');
             console.error(err);
@@ -37,32 +37,35 @@ const EditProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const formData = new FormData();
-
-            // Add basic product data
-            formData.append('name', product.name);
-            formData.append('description', product.description);
-            formData.append('price', product.price.toString());
-            formData.append('category', product.category);
-            formData.append('manufacturer', product.manufacturer);
-            formData.append('stockQuantity', product.stockQuantity.toString());
-            formData.append('status', product.status);
-
-            // Handle image - preserve the /images/ path format
-            if (product.imageFile) {
-                formData.append('imageFile', product.imageFile);
-            } else {
-                // Keep the original path format
-                formData.append('imageUrl', product.imageUrl);
+            // Basic validation
+            if (!product.name || !product.description || !product.category || !product.manufacturer) {
+                throw new Error('Please fill in all required fields');
             }
 
-            const result = await updateProduct(id, formData);
-            console.log('Update successful:', result);
+            const productData = {
+                name: product.name.trim(),
+                description: product.description.trim(),
+                price: Number(product.price),
+                category: product.category.toLowerCase(),
+                manufacturer: product.manufacturer.trim(),
+                stockQuantity: Number(product.stockQuantity),
+                status: product.status || 'Available',
+                warrantyDuration: Number(product.warrantyDuration || 0)
+            };
+
+            // Add image data if exists
+            if (product.imageFile) {
+                productData.imageFile = product.imageFile;
+            } else if (product.imageUrl) {
+                productData.imageUrl = product.imageUrl;
+            }
+
+            await updateProduct(id, productData);
             alert('Product updated successfully!');
             navigate('/ProductManagement');
         } catch (err) {
-            console.error('Update failed:', err.response?.data);
-            setError(err.response?.data?.message || 'Failed to update product');
+            console.error('Update failed:', err);
+            alert(err.message || 'Failed to update product');
         }
     };
 
@@ -219,8 +222,26 @@ const EditProduct = () => {
                 </div>
 
                 <div className="button-group">
-                    <button type="submit">Update Product</button>
-                    <button type="button" onClick={() => navigate('/products')}>Cancel</button>
+                    <button
+                        type="submit"
+                        className="update-product-button"
+                    >
+                        Update Product Only
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => navigate(`/products/${id}/items`)}
+                        className="manage-items-button"
+                    >
+                        Manage Items
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => navigate('/ProductManagement')}
+                        className="cancel-button"
+                    >
+                        Cancel
+                    </button>
                 </div>
             </form>
         </div>

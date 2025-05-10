@@ -27,6 +27,7 @@ namespace Backend.Controllers
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
+                    // Validate user
                     var user = await _context.Users.FindAsync(orderDto.UserId);
                     if (user == null)
                     {
@@ -34,7 +35,7 @@ namespace Backend.Controllers
                     }
 
                     decimal subtotal = 0;
-                    // Calculate subtotal first
+                    // Calculate subtotal and validate stock
                     foreach (var detail in orderDto.OrderDetails)
                     {
                         var product = await _context.Products.FindAsync(detail.ProductId);
@@ -43,7 +44,13 @@ namespace Backend.Controllers
                             throw new Exception($"Product {detail.ProductId} not found");
                         }
 
-                        if (product.StockQuantity < detail.Quantity)
+                        // Kiểm tra số lượng available ProductItems
+                        var availableItems = await _context.ProductItems
+                            .Where(pi => pi.ProductId == detail.ProductId && pi.Status == "in_stock")
+                            .Take(detail.Quantity)
+                            .ToListAsync();
+
+                        if (availableItems.Count < detail.Quantity)
                         {
                             throw new Exception($"Insufficient stock for product {product.Name}");
                         }
@@ -72,20 +79,48 @@ namespace Backend.Controllers
                     _context.Orders.Add(order);
                     await _context.SaveChangesAsync();
 
-                    // Process order details
+                    // Process order details and product items
                     foreach (var detail in orderDto.OrderDetails)
                     {
                         var product = await _context.Products.FindAsync(detail.ProductId);
-                        var orderDetail = new OrderDetail
-                        {
-                            OrderId = order.Id,
-                            ProductId = detail.ProductId,
-                            Quantity = detail.Quantity,
-                            UnitPrice = detail.UnitPrice,
-                            Subtotal = detail.Quantity * detail.UnitPrice
-                        };
+                        var availableItems = await _context.ProductItems
+                            .Where(pi => pi.ProductId == detail.ProductId && pi.Status == "in_stock")
+                            .Take(detail.Quantity)
+                            .ToListAsync();
 
-                        _context.OrderDetails.Add(orderDetail);
+                        foreach (var item in availableItems)
+                        {
+                            var orderDetail = new OrderDetail
+                            {
+                                OrderId = order.Id,
+                                ProductId = detail.ProductId,
+                                ItemId = item.ItemId,
+                                Quantity = 1,
+                                UnitPrice = detail.UnitPrice,
+                                Subtotal = detail.UnitPrice
+                            };
+
+                            // Update ProductItem status
+                            item.Status = "sold";
+                            item.PurchaseDate = DateTime.Now;
+
+                            // Create warranty if product has warranty duration
+                            if (product.WarrantyDuration > 0)
+                            {
+                                var warranty = new Warranty
+                                {
+                                    ItemId = item.ItemId,
+                                    StartDate = DateTime.Now,
+                                    Duration = product.WarrantyDuration,
+                                    Status = "active"
+                                };
+                                _context.Warranties.Add(warranty);
+                            }
+
+                            _context.OrderDetails.Add(orderDetail);
+                        }
+
+                        // Update Product quantities
                         product.StockQuantity -= detail.Quantity;
                         product.SoldQuantity += detail.Quantity;
                     }
@@ -171,34 +206,38 @@ namespace Backend.Controllers
         {
             try
             {
-                var orders = await _context.Orders
-                    .Include(o => o.OrderDetails)
-                        .ThenInclude(od => od.Product)
-                    .Include(o => o.User)
-                    .OrderByDescending(o => o.OrderDate)
-                    .Select(o => new
-                    {
-                        id = o.Id,
-                        userId = o.UserId,
-                        userName = o.User.Username,
-                        userEmail = o.User.Email,
-                        orderDate = o.OrderDate,
-                        status = o.Status,
-                        totalAmount = o.TotalAmount,
-                        shippingAddress = o.ShippingAddress,
-                        phoneNumber = o.PhoneNumber,
-                        province = o.Province,
-                        district = o.District,
-                        ward = o.Ward,
-                        orderItems = o.OrderDetails.Select(od => new
-                        {
-                            id = od.Id,
-                            productName = od.Product.Name,
-                            quantity = od.Quantity,
-                            price = od.UnitPrice
-                        }).ToList()
-                    })
-                    .ToListAsync();
+                var orders = await (from o in _context.Orders
+                                    join u in _context.Users on o.UserId equals u.Id
+                                    select new
+                                    {
+                                        id = o.Id,
+                                        userId = o.UserId,
+                                        userName = u.Username,
+                                        userEmail = u.Email,
+                                        orderDate = o.OrderDate,
+                                        status = o.Status,
+                                        totalAmount = o.TotalAmount,
+                                        shippingAddress = o.ShippingAddress,
+                                        phoneNumber = o.PhoneNumber,
+                                        province = o.Province,
+                                        district = o.District,
+                                        ward = o.Ward,
+                                        orderItems = (from od in _context.OrderDetails
+                                                      join pi in _context.ProductItems on od.ItemId equals pi.ItemId
+                                                      join p in _context.Products on pi.ProductId equals p.Id
+                                                      where od.OrderId == o.Id
+                                                      select new
+                                                      {
+                                                          id = od.Id,
+                                                          productName = p.Name,
+                                                          quantity = od.Quantity,
+                                                          price = od.UnitPrice,
+                                                          itemId = od.ItemId,
+                                                          serialNumber = pi.SerialNumber
+                                                      }).ToList()
+                                    })
+                                   .OrderByDescending(o => o.orderDate)
+                                   .ToListAsync();
 
                 return Ok(orders);
             }

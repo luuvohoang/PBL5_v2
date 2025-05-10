@@ -15,7 +15,9 @@ const ProductManagement = () => {
         imageFile: null,
         manufacturer: '',
         stockQuantity: '',
-        status: 'Available'
+        status: 'Available',
+        serialNumbersText: '',  // Thay đổi từ mảng thành text
+        warrantyDuration: 0
     });
     const [isAdding, setIsAdding] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -74,8 +76,44 @@ const ProductManagement = () => {
         }
     };
 
+    const handleSerialNumbersChange = (e) => {
+        const text = e.target.value;
+        setNewProduct(prev => ({
+            ...prev,
+            serialNumbersText: text
+        }));
+    };
+
+    const validateSerialNumbers = (text, stockQuantity) => {
+        if (!text.trim()) return { isValid: false, message: 'Serial numbers cannot be empty' };
+
+        const serialNumbers = text.trim().split('\n').filter(line => line.trim());
+
+        if (serialNumbers.length !== parseInt(stockQuantity)) {
+            return {
+                isValid: false,
+                message: `Number of serial numbers (${serialNumbers.length}) does not match stock quantity (${stockQuantity})`
+            };
+        }
+
+        const hasDuplicates = new Set(serialNumbers).size !== serialNumbers.length;
+        if (hasDuplicates) {
+            return { isValid: false, message: 'Duplicate serial numbers found' };
+        }
+
+        return { isValid: true, serialNumbers };
+    };
+
     const handleAddProduct = async (e) => {
         e.preventDefault();
+
+        // Validate serial numbers
+        const validation = validateSerialNumbers(newProduct.serialNumbersText, newProduct.stockQuantity);
+        if (!validation.isValid) {
+            alert(validation.message);
+            return;
+        }
+
         try {
             const productData = {
                 name: newProduct.name,
@@ -83,10 +121,10 @@ const ProductManagement = () => {
                 description: newProduct.description,
                 category: newProduct.category,
                 manufacturer: newProduct.manufacturer,
-                stockQuantity: Number(newProduct.stockQuantity),
                 status: newProduct.status,
                 imageFile: newProduct.imageFile,
-                imageUrl: newProduct.imageFile ? `/images/${newProduct.imageFile.name}` : null
+                warrantyDuration: Number(newProduct.warrantyDuration),
+                serialNumbers: validation.serialNumbers
             };
 
             await addProduct(productData);
@@ -99,12 +137,13 @@ const ProductManagement = () => {
                 category: '',
                 imageFile: null,
                 manufacturer: '',
-                stockQuantity: '',
-                status: 'Available'
+                status: 'Available',
+                serialNumbersText: '',
+                warrantyDuration: 0
             });
             setSelectedImage(null);
             setIsAdding(false);
-            fetchProducts(currentPage); // Direct call instead of handleRefresh
+            fetchProducts(currentPage);
             alert('Product added successfully!');
         } catch (error) {
             console.error('Error adding product:', error);
@@ -276,6 +315,32 @@ const ProductManagement = () => {
                             </div>
                         )}
                     </div>
+
+                    <div className="warranty-section">
+                        <label>Warranty Duration (months):</label>
+                        <input
+                            type="number"
+                            name="warrantyDuration"
+                            value={newProduct.warrantyDuration}
+                            onChange={handleInputChange}
+                            min="0"
+                        />
+                    </div>
+
+                    <div className="serial-numbers-section">
+                        <label>Serial Numbers (one per line):</label>
+                        <textarea
+                            value={newProduct.serialNumbersText}
+                            onChange={handleSerialNumbersChange}
+                            placeholder={`Enter serial numbers (${newProduct.stockQuantity || 0} required)\nExample:\nRTX4080-1234ABCD\nRTX4080-5678EFGH`}
+                            rows={10}
+                            required
+                        />
+                        <small className="help-text">
+                            Number of serial numbers must match stock quantity ({newProduct.stockQuantity || 0})
+                        </small>
+                    </div>
+
                     <button type="submit">Add Product</button>
                 </form>
             )}

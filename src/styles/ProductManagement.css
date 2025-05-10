@@ -284,3 +284,26 @@
     display: grid;
     gap: 2rem;
 }
+
+.serial-numbers-section {
+    margin-bottom: 20px;
+}
+
+.serial-numbers-section textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.serial-numbers-section .help-text {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 12px;
+}

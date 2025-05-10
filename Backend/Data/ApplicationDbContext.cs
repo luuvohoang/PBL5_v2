@@ -22,6 +22,8 @@ namespace Backend.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<ProductItem> ProductItems { get; set; }
+        public DbSet<Warranty> Warranties { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -137,6 +139,49 @@ namespace Backend.Data
                 .HasOne(od => od.Product)
                 .WithMany()
                 .HasForeignKey(od => od.ProductId);
+
+            modelBuilder.Entity<ProductItem>()
+                .HasIndex(p => p.SerialNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<Warranty>()
+                .Property(w => w.EndDate)
+                .HasComputedColumnSql("DATEADD(MONTH, [Duration], [StartDate])");
+
+            // Configure ProductItem relationships
+            modelBuilder.Entity<ProductItem>()
+                .HasOne(pi => pi.Product)
+                .WithMany()
+                .HasForeignKey(pi => pi.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProductItem>()
+                .HasIndex(pi => pi.SerialNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<ProductItem>()
+                .Property(pi => pi.Status)
+                .HasConversion<string>()
+                .HasMaxLength(30);
+
+            // Configure Warranty relationships
+            modelBuilder.Entity<Warranty>()
+                .HasOne(w => w.ProductItem)
+                .WithMany(pi => pi.Warranties)
+                .HasForeignKey(w => w.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Warranty>()
+                .Property(w => w.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+
+            // Update OrderDetail to include ProductItem
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.ProductItem)
+                .WithMany()
+                .HasForeignKey(od => od.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Seed initial data
             modelBuilder.Entity<Product>().HasData(

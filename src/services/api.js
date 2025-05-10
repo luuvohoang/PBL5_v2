@@ -37,6 +37,24 @@ export const getProductById = async (id) => {
     }
 };
 
+export const getProductDetails = async (id) => {
+    const response = await axios.get(`${API_URL}/products/${id}/details`);
+    return response.data;
+};
+
+export const updateProductItems = async (id, updateData) => {
+    try {
+        // Log data being sent
+        console.log('Sending update data:', updateData);
+
+        const response = await axios.put(`${API_URL}/productitems/${id}`, updateData);
+        return response.data;
+    } catch (error) {
+        console.error('Update items error:', error.response?.data);
+        throw error;
+    }
+};
+
 export const testConnection = async () => {
     try {
         const response = await axios.get(`${API_URL}/products/test-connection`);
@@ -205,49 +223,77 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, productData) => {
     try {
-        // Convert FormData to plain object for debugging
-        const formDataObject = {};
-        for (let pair of productData.entries()) {
-            formDataObject[pair[0]] = pair[1];
-        }
-        console.log('Sending data:', formDataObject);
+        const formData = new FormData();
 
-        const response = await axios.put(`${API_URL}/products/${id}`, productData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        // Basic fields
+        const fieldsToSend = [
+            'Name', 'Description', 'Price', 'Category',
+            'Manufacturer', 'Status', 'WarrantyDuration'
+        ];
+
+        fieldsToSend.forEach(field => {
+            const value = productData[field.toLowerCase()];
+            if (value !== null && value !== undefined) {
+                formData.append(field, String(value));
+            }
         });
+
+        // Handle image separately
+        if (productData.imageFile instanceof File) {
+            formData.append('ImageFile', productData.imageFile);
+        }
+        if (productData.imageUrl) {
+            formData.append('ImageUrl', productData.imageUrl);
+        }
+
+        const response = await axios({
+            method: 'PUT',
+            url: `${API_URL}/products/${id}`,
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
         return response.data;
     } catch (error) {
-        console.error('Full error details:', error.response?.data);
+        console.error('Update product error details:', error.response?.data);
         throw error;
     }
 };
 
 export const addProduct = async (productData) => {
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
         const formData = new FormData();
 
-        // Add all basic fields
-        formData.append('name', productData.name);
-        formData.append('description', productData.description);
-        formData.append('price', productData.price);
-        formData.append('category', productData.category);
-        formData.append('stockQuantity', productData.stockQuantity);
-        formData.append('status', productData.status);
-        formData.append('manufacturer', productData.manufacturer);
+        // Add basic fields
+        formData.append('Name', productData.name);
+        formData.append('Description', productData.description);
+        formData.append('Price', productData.price);
+        formData.append('Category', productData.category);
+        formData.append('Status', productData.status);
+        formData.append('Manufacturer', productData.manufacturer);
+        formData.append('WarrantyDuration', productData.warrantyDuration);
+        // Set default ImageUrl
+        formData.append('ImageUrl', '/images/default.jpg');
 
-        // Add image file if exists
-        if (productData.imageFile) {
-            formData.append('imageFile', productData.imageFile);
-            formData.append('imageUrl', `/images/${productData.imageFile.name}`);
+        // Add serial numbers
+        const serialNumbers = productData.serialNumbers;
+        if (serialNumbers && serialNumbers.length > 0) {
+            serialNumbers.forEach((serial) => {
+                formData.append('SerialNumbers', serial.trim());
+            });
         }
 
-        // Add user information
-        if (user?.id) {
-            formData.append('createdById', user.id);
-            formData.append('updatedById', user.id);
+        // Add image file and update ImageUrl if file exists
+        if (productData.imageFile) {
+            formData.append('ImageFile', productData.imageFile);
+            formData.append('ImageUrl', `/images/${productData.imageFile.name}`);
+        }
+
+        // Log formData for debugging
+        for (let [key, value] of formData.entries()) {
+            console.log('FormData:', key, value);
         }
 
         const response = await axios.post(`${API_URL}/products`, formData, {
@@ -257,7 +303,7 @@ export const addProduct = async (productData) => {
         });
         return response.data;
     } catch (error) {
-        console.error('AddProduct API error:', error);
+        console.error('AddProduct API error:', error.response?.data || error);
         throw error;
     }
 };

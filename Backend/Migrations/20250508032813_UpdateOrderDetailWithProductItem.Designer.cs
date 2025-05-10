@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508032813_UpdateOrderDetailWithProductItem")]
+    partial class UpdateOrderDetailWithProductItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -325,9 +328,6 @@ namespace Backend.Migrations
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
-                    b.Property<int>("WarrantyDuration")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
@@ -353,8 +353,7 @@ namespace Backend.Migrations
                             Price = 449.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-                            StockQuantity = 10,
-                            WarrantyDuration = 0
+                            StockQuantity = 10
                         },
                         new
                         {
@@ -367,8 +366,7 @@ namespace Backend.Migrations
                             Price = 699.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-                            StockQuantity = 5,
-                            WarrantyDuration = 0
+                            StockQuantity = 5
                         },
                         new
                         {
@@ -381,8 +379,7 @@ namespace Backend.Migrations
                             Price = 189.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-                            StockQuantity = 15,
-                            WarrantyDuration = 0
+                            StockQuantity = 15
                         });
                 });
 
