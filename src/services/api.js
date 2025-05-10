@@ -342,22 +342,69 @@ export const getUserProfile = async (userId) => {
 export const getUserOrders = async (userId) => {
     try {
         const response = await axios.get(`${API_URL}/orders/user/${userId}`);
+        return response?.data || [];
+    } catch (error) {
+        console.error('Error fetching user orders:', error.response?.data || error.message);
+        return [];
+    }
+};
+
+export const getAvailableItems = async (productId, quantity) => {
+    try {
+        const response = await axios.get(`${API_URL}/productitems/available/${productId}/${quantity}`);
         return response.data;
     } catch (error) {
-        console.error('Error fetching user orders:', error);
+        console.error('Error getting available items:', error);
+        throw error;
+    }
+};
+
+export const getItemProduct = async (itemId) => {
+    try {
+        if (!itemId) {
+            throw new Error('ItemId is required');
+        }
+        const response = await axios.get(`${API_URL}/productitems/${itemId}/product`);
+        return response.data;
+    } catch (error) {
+        console.error('Error getting item product:', error);
         throw error;
     }
 };
 
 export const createOrder = async (orderData) => {
     try {
-        const response = await axios.post(`${API_URL}/orders`, orderData, {
+        // Transform order details: add unitPrice from product price
+        const transformedDetails = await Promise.all(
+            orderData.orderDetails.map(async (detail) => {
+                if (!detail.itemId) {
+                    throw new Error('Missing itemId in order details');
+                }
+                const itemProduct = await getItemProduct(detail.itemId);
+                return {
+                    itemId: detail.itemId,
+                    quantity: 1,
+                    unitPrice: itemProduct.price
+                };
+            })
+        );
+
+        // Create new order data with transformed details
+        const transformedOrderData = {
+            ...orderData,
+            orderDetails: transformedDetails
+        };
+
+        const response = await axios.post(`${API_URL}/orders`, transformedOrderData, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         return response.data;
     } catch (error) {
+        if (error.message === 'Missing itemId in order details') {
+            throw new Error('Invalid order details: Missing item information');
+        }
         console.error('Error creating order:', error.response?.data || error.message);
         throw error;
     }

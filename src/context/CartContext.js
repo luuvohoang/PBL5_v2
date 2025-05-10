@@ -7,43 +7,52 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [cartCount, setCartCount] = useState(0);
-    const user = JSON.parse(localStorage.getItem('user'));
+    const [userId, setUserId] = useState(null);
+
+    // Chỉ lấy userId từ localStorage một lần khi component mount
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        setUserId(user?.id || null);
+    }, []);
 
     const fetchCart = useCallback(async () => {
-        if (!user) return;
+        if (!userId) return;
         try {
-            const response = await axios.get(`${API_URL}/cart/${user.id}`);
+            const response = await axios.get(`${API_URL}/cart/${userId}`);
             setCart(response.data);
         } catch (error) {
             console.error('Failed to fetch cart:', error);
         }
-    }, [user]);
+    }, [userId]); // Chỉ phụ thuộc vào userId
 
+    // Chỉ fetch cart khi userId thay đổi
     useEffect(() => {
-        if (user) {
+        if (userId) {
             fetchCart();
+        } else {
+            setCart([]);
         }
-    }, [user, fetchCart]);
+    }, [userId, fetchCart]);
 
+    // Tính toán cartCount khi cart thay đổi
     useEffect(() => {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         setCartCount(totalItems);
     }, [cart]);
 
     const addToCart = async (product) => {
-        if (!user) {
+        if (!userId) {
             alert('Please login to add items to cart');
             return;
         }
 
         try {
-            const response = await axios.post(`${API_URL}/cart/add`, {
-                userId: user.id,
+            await axios.post(`${API_URL}/cart/add`, {
+                userId: userId,
                 productId: product.id,
                 quantity: 1
             });
-            await fetchCart();
-            return response.data;
+            await fetchCart(); // Fetch lại cart sau khi thêm
         } catch (error) {
             console.error('Failed to add to cart:', error);
             throw error;
@@ -70,7 +79,14 @@ export const CartProvider = ({ children }) => {
     };
 
     return (
-        <CartContext.Provider value={{ cart, cartCount, addToCart, removeFromCart, updateQuantity }}>
+        <CartContext.Provider value={{
+            cart,
+            cartCount,
+            addToCart,
+            removeFromCart,
+            updateQuantity,
+            fetchCart // Thêm fetchCart vào context để có thể gọi khi cần
+        }}>
             {children}
         </CartContext.Provider>
     );

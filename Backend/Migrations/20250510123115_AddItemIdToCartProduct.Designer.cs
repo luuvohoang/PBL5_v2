@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250510123115_AddItemIdToCartProduct")]
+    partial class AddItemIdToCartProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,12 +57,20 @@ namespace Backend.Migrations
                     b.Property<DateTime>("AddedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductItemItemId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("CartId", "ProductId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductItemItemId");
 
                     b.ToTable("CartProducts");
                 });
@@ -409,6 +420,9 @@ namespace Backend.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProductId1")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("PurchaseDate")
                         .HasColumnType("datetime2");
 
@@ -425,6 +439,8 @@ namespace Backend.Migrations
                     b.HasKey("ItemId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductId1");
 
                     b.HasIndex("SerialNumber")
                         .IsUnique();
@@ -581,9 +597,17 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Backend.Models.ProductItem", "ProductItem")
+                        .WithMany()
+                        .HasForeignKey("ProductItemItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
+
+                    b.Navigation("ProductItem");
                 });
 
             modelBuilder.Entity("Backend.Models.Employee", b =>
@@ -704,10 +728,14 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.ProductItem", b =>
                 {
                     b.HasOne("Backend.Models.Product", "Product")
-                        .WithMany("ProductItems")
+                        .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Backend.Models.Product", null)
+                        .WithMany("ProductItems")
+                        .HasForeignKey("ProductId1");
 
                     b.Navigation("Product");
                 });

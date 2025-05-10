@@ -133,11 +133,7 @@ const Checkout = () => {
 
             const shippingAddress = `${formData.shippingAddress}, ${selectedWardName}, ${selectedDistrictName}, ${selectedProvinceName}`;
 
-            const subtotal = cart.reduce((sum, item) => {
-                const itemPrice = item.sale ? item.price * (1 - item.sale.discountPercent / 100) : item.price;
-                return sum + itemPrice * item.quantity;
-            }, 0);
-
+            // Create order data with available item IDs
             const orderData = {
                 userId: user.id,
                 shippingAddress: shippingAddress,
@@ -147,14 +143,18 @@ const Checkout = () => {
                 district: selectedDistrictName,
                 ward: selectedWardName,
                 shippingMethod: shippingMethod === '1' ? 'Express' : shippingMethod === '2' ? 'Standard' : 'Saving',
-                shippingFee: shippingFee, // Already in USD
-                orderDetails: cart.map(item => ({
-                    productId: item.productId,
-                    quantity: item.quantity,
-                    unitPrice: item.sale
-                        ? item.price * (1 - item.sale.discountPercent / 100)
-                        : item.price
-                }))
+                shippingFee: shippingFee,
+                orderDetails: cart.flatMap(item =>
+                    item.availableItems
+                        .slice(0, item.quantity)
+                        .map(availableItem => ({
+                            itemId: availableItem.itemId,
+                            quantity: 1,
+                            unitPrice: item.sale
+                                ? item.price * (1 - item.sale.discountPercent / 100)
+                                : item.price
+                        }))
+                )
             };
 
             const result = await createOrder(orderData);
@@ -209,7 +209,7 @@ const Checkout = () => {
 
                 <form onSubmit={handleSubmit} className="checkout-form">
                     <h2>Shipping Information</h2>
-                    
+
                     <div className="form-group">
                         <label>Province/City</label>
                         <select value={selectedProvince} onChange={handleProvinceChange} required>

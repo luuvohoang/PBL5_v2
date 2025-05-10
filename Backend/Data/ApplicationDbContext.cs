@@ -133,12 +133,14 @@ namespace Backend.Data
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Order)
                 .WithMany(o => o.OrderDetails)
-                .HasForeignKey(od => od.OrderId);
+                .HasForeignKey(od => od.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<OrderDetail>()
-                .HasOne(od => od.Product)
+                .HasOne(od => od.ProductItem)
                 .WithMany()
-                .HasForeignKey(od => od.ProductId);
+                .HasForeignKey(od => od.ItemId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<ProductItem>()
                 .HasIndex(p => p.SerialNumber)
@@ -164,6 +166,14 @@ namespace Backend.Data
                 .HasConversion<string>()
                 .HasMaxLength(30);
 
+            modelBuilder.Entity<ProductItem>(entity =>
+            {
+                entity.HasOne(pi => pi.Product)
+                    .WithMany(p => p.ProductItems)
+                    .HasForeignKey(pi => pi.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             // Configure Warranty relationships
             modelBuilder.Entity<Warranty>()
                 .HasOne(w => w.ProductItem)
@@ -175,13 +185,6 @@ namespace Backend.Data
                 .Property(w => w.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
-
-            // Update OrderDetail to include ProductItem
-            modelBuilder.Entity<OrderDetail>()
-                .HasOne(od => od.ProductItem)
-                .WithMany()
-                .HasForeignKey(od => od.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // Seed initial data
             modelBuilder.Entity<Product>().HasData(

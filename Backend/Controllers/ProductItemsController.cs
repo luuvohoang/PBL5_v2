@@ -36,6 +36,67 @@ namespace Backend.Controllers
             return Ok(items);
         }
 
+        [HttpGet("available/{productId}/{quantity}")]
+        public async Task<ActionResult<List<ProductItemDTO>>> GetAvailableItems(int productId, int quantity)
+        {
+            try
+            {
+                var availableItems = await _context.ProductItems
+                    .Where(pi => pi.ProductId == productId && pi.Status == "in_stock")
+                    .Take(quantity)
+                    .Select(pi => new ProductItemDTO
+                    {
+                        ItemId = pi.ItemId,
+                        SerialNumber = pi.SerialNumber,
+                        Status = pi.Status,
+                        ManufactureDate = pi.ManufactureDate,
+                        PurchaseDate = pi.PurchaseDate
+                    })
+                    .ToListAsync();
+
+                if (availableItems.Count < quantity)
+                {
+                    return BadRequest($"Only {availableItems.Count} items available");
+                }
+
+                return Ok(availableItems);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("{itemId}/product")]
+        public async Task<ActionResult> GetItemProduct(int? itemId)
+        {
+            try
+            {
+                if (!itemId.HasValue)
+                    return BadRequest("ItemId is required");
+
+                var item = await _context.ProductItems
+                    .Include(pi => pi.Product)
+                    .FirstOrDefaultAsync(pi => pi.ItemId == itemId);
+
+                if (item == null)
+                    return NotFound($"Item with ID {itemId} not found");
+
+                return Ok(new
+                {
+                    productId = item.ProductId,
+                    name = item.Product.Name,
+                    price = item.Product.Price,
+                    warrantyDuration = item.Product.WarrantyDuration,
+                    serialNumber = item.SerialNumber
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
         [HttpPut("{productId}")]
         [RoleAuthorization("Admin", "Manager")]
         public async Task<IActionResult> UpdateItems(int productId, [FromBody] ProductItemUpdateDTO updateDto)

@@ -16,9 +16,19 @@ namespace Backend.Models.DTOs
 
     public class OrderDetailDTO
     {
-        public int ProductId { get; set; }
-        public int Quantity { get; set; }
+        public int ItemId { get; set; }
         public decimal UnitPrice { get; set; }
-        public List<string> SerialNumbers { get; set; } // Thêm trường này
+        public int Quantity { get; set; }
+    }
+
+    public class OrderDetailResponseDTO
+    {
+        public int Id { get; set; }
+        public int ItemId { get; set; }
+        public string SerialNumber { get; set; }
+        public string ProductName { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal Subtotal { get; set; }
+        public int Quantity { get; set; }
     }
 }

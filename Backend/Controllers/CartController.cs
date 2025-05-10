@@ -20,34 +20,49 @@ namespace Backend.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetUserCart(int userId)
         {
-            var cartItems = await _context.CartProducts
-                .Include(cp => cp.Product)
-                    .ThenInclude(p => p.Sale)  // Include Sale information
-                .Include(cp => cp.Cart)
-                .Where(cp => cp.Cart.UserId == userId)
-                .Select(cp => new
-                {
-                    cp.CartId,
-                    cp.ProductId,
-                    cp.Product.Name,
-                    cp.Product.Price,
-                    DiscountedPrice = cp.Product.Sale != null
-                        ? cp.Product.Price * (1 - cp.Product.Sale.DiscountPercent / 100)
-                        : cp.Product.Price,
-                    cp.Product.ImageUrl,
-                    cp.Quantity,
-                    Total = cp.Product.Sale != null
-                        ? (cp.Product.Price * (1 - cp.Product.Sale.DiscountPercent / 100)) * cp.Quantity
-                        : cp.Product.Price * cp.Quantity,
-                    Sale = cp.Product.Sale != null ? new
+            try
+            {
+                var cartItems = await _context.CartProducts
+                    .Include(cp => cp.Product)
+                        .ThenInclude(p => p.ProductItems.Where(pi => pi.Status == "in_stock"))
+                    .Include(cp => cp.Product.Sale)
+                    .Include(cp => cp.Cart)
+                    .Where(cp => cp.Cart.UserId == userId)
+                    .Select(cp => new
                     {
-                        cp.Product.Sale.DiscountPercent,
-                        cp.Product.Sale.IsActive
-                    } : null
-                })
-                .ToListAsync();
+                        cp.CartId,
+                        cp.ProductId,
+                        cp.Product.Name,
+                        cp.Product.Price,
+                        DiscountedPrice = cp.Product.Sale != null
+                            ? cp.Product.Price * (1 - cp.Product.Sale.DiscountPercent / 100)
+                            : cp.Product.Price,
+                        cp.Product.ImageUrl,
+                        cp.Quantity,
+                        Available = cp.Product.ProductItems.Count(),
+                        AvailableItems = cp.Product.ProductItems
+                            .Select(pi => new
+                            {
+                                pi.ItemId,
+                                pi.SerialNumber
+                            }).ToList(),
+                        Total = cp.Product.Sale != null
+                            ? (cp.Product.Price * (1 - cp.Product.Sale.DiscountPercent / 100)) * cp.Quantity
+                            : cp.Product.Price * cp.Quantity,
+                        Sale = cp.Product.Sale != null ? new
+                        {
+                            cp.Product.Sale.DiscountPercent,
+                            cp.Product.Sale.IsActive
+                        } : null
+                    })
+                    .ToListAsync();
 
-            return Ok(cartItems);
+                return Ok(cartItems);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message, stackTrace = ex.StackTrace });
+            }
         }
 
         [HttpPost("add")]

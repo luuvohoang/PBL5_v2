@@ -157,17 +157,14 @@ const AdminOrders = () => {
                         <h2>Order Details #{selectedOrder.id}</h2>
                         <div className="details-section">
                             <h3>Customer Information</h3>
-                            <p><strong>Name:</strong> {selectedOrder.userName}</p>
-                            <p><strong>Email:</strong> {selectedOrder.userEmail}</p>
-                            <p><strong>Phone:</strong> {selectedOrder.phoneNumber}</p>
+                            <p><strong>Name:</strong> {selectedOrder.userName || 'N/A'}</p>
+                            <p><strong>Email:</strong> {selectedOrder.userEmail || 'N/A'}</p>
+                            <p><strong>Phone:</strong> {selectedOrder.phoneNumber || 'N/A'}</p>
                         </div>
 
                         <div className="details-section">
                             <h3>Shipping Information</h3>
-                            <p><strong>Address:</strong> {selectedOrder.shippingAddress}</p>
-                            <p><strong>Province:</strong> {selectedOrder.province}</p>
-                            <p><strong>District:</strong> {selectedOrder.district}</p>
-                            <p><strong>Ward:</strong> {selectedOrder.ward}</p>
+                            <p><strong>Address:</strong> {selectedOrder.shippingAddress || 'N/A'}</p>
                         </div>
 
                         <div className="details-section">
