@@ -131,9 +131,18 @@ const Checkout = () => {
             const selectedDistrictName = districts.find(d => d.DistrictID.toString() === selectedDistrict)?.DistrictName;
             const selectedWardName = wards.find(w => w.WardCode === selectedWard)?.WardName;
 
+            // Chuẩn bị order details với productId thay vì itemId
+            const orderDetails = cart.map(item => ({
+                productId: item.productId,
+                productName: item.name,
+                quantity: item.quantity,
+                unitPrice: item.sale
+                    ? item.price * (1 - item.sale.discountPercent / 100)
+                    : item.price
+            }));
+
             const shippingAddress = `${formData.shippingAddress}, ${selectedWardName}, ${selectedDistrictName}, ${selectedProvinceName}`;
 
-            // Create order data with available item IDs
             const orderData = {
                 userId: user.id,
                 shippingAddress: shippingAddress,
@@ -144,17 +153,7 @@ const Checkout = () => {
                 ward: selectedWardName,
                 shippingMethod: shippingMethod === '1' ? 'Express' : shippingMethod === '2' ? 'Standard' : 'Saving',
                 shippingFee: shippingFee,
-                orderDetails: cart.flatMap(item =>
-                    item.availableItems
-                        .slice(0, item.quantity)
-                        .map(availableItem => ({
-                            itemId: availableItem.itemId,
-                            quantity: 1,
-                            unitPrice: item.sale
-                                ? item.price * (1 - item.sale.discountPercent / 100)
-                                : item.price
-                        }))
-                )
+                orderDetails: orderDetails
             };
 
             const result = await createOrder(orderData);
@@ -164,7 +163,7 @@ const Checkout = () => {
             }
         } catch (error) {
             console.error('Error placing order:', error);
-            alert(error.response?.data?.message || 'Failed to place order. Please try again.');
+            alert(error.message || 'Failed to place order. Please try again.');
         }
     };
 

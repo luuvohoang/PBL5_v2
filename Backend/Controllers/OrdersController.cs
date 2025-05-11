@@ -92,19 +92,6 @@ namespace Backend.Controllers
                         item.Status = "sold";
                         item.PurchaseDate = DateTime.Now;
 
-                        // Create warranty if applicable
-                        if (item.Product.WarrantyDuration > 0)
-                        {
-                            var warranty = new Warranty
-                            {
-                                ItemId = item.ItemId,
-                                StartDate = DateTime.Now,
-                                Duration = item.Product.WarrantyDuration,
-                                Status = "active"
-                            };
-                            _context.Warranties.Add(warranty);
-                        }
-
                         // Update product quantities
                         item.Product.StockQuantity--;
                         item.Product.SoldQuantity++;
@@ -145,7 +132,6 @@ namespace Backend.Controllers
         {
             try
             {
-                // First check if user exists
                 var user = await _context.Users.FindAsync(userId);
                 if (user == null)
                     return NotFound($"User with ID {userId} not found");
@@ -155,6 +141,8 @@ namespace Backend.Controllers
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.ProductItem)
                             .ThenInclude(pi => pi.Product)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.ProductItem.Warranties)
                     .Where(o => o.UserId == userId)
                     .OrderByDescending(o => o.OrderDate)
                     .Select(o => new
@@ -178,7 +166,19 @@ namespace Backend.Controllers
                             productName = od.ProductItem.Product.Name ?? "Unknown Product",
                             serialNumber = od.ProductItem.SerialNumber ?? "N/A",
                             unitPrice = od.UnitPrice,
-                            subtotal = od.Subtotal
+                            subtotal = od.Subtotal,
+                            warranty = od.ProductItem.Warranties
+                                .OrderByDescending(w => w.StartDate)
+                                .Select(w => new
+                                {
+                                    warrantyId = w.WarrantyId,
+                                    status = w.Status,
+                                    startDate = w.StartDate.ToString("yyyy-MM-dd"),
+                                    endDate = w.EndDate.ToString("yyyy-MM-dd"),
+                                    duration = w.Duration,
+                                    notes = w.Notes ?? ""
+                                })
+                                .FirstOrDefault()
                         }).ToList()
                     })
                     .ToListAsync();
@@ -187,7 +187,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message, stackTrace = ex.StackTrace });
+                return StatusCode(500, new { message = ex.Message });
             }
         }
 
@@ -232,6 +232,8 @@ namespace Backend.Controllers
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.ProductItem)
                             .ThenInclude(pi => pi.Product)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.ProductItem.Warranties)
                     .Select(o => new
                     {
                         id = o.Id,
@@ -250,7 +252,19 @@ namespace Backend.Controllers
                             serialNumber = od.ProductItem.SerialNumber,
                             price = od.UnitPrice,
                             quantity = od.Quantity,
-                            total = od.Subtotal
+                            total = od.Subtotal,
+                            warranty = od.ProductItem.Warranties
+                                .OrderByDescending(w => w.StartDate)
+                                .Select(w => new
+                                {
+                                    warrantyId = w.WarrantyId,
+                                    status = w.Status,
+                                    startDate = w.StartDate,
+                                    endDate = w.EndDate,
+                                    duration = w.Duration,
+                                    notes = w.Notes
+                                })
+                                .FirstOrDefault()
                         }).ToList()
                     })
                     .ToListAsync();
@@ -266,49 +280,74 @@ namespace Backend.Controllers
         [HttpPut("{id}/status")]
         public async Task<ActionResult<Order>> UpdateOrderStatus(int id, [FromBody] OrderStatusUpdateDTO updateDto)
         {
-            try
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return await strategy.ExecuteAsync(async () =>
             {
-                // Find order with minimal includes
-                var order = await _context.Orders.FindAsync(id);
-
-                if (order == null)
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
-                    return NotFound($"Order with ID {id} not found");
+                    var order = await _context.Orders
+                        .Include(o => o.OrderDetails)
+                            .ThenInclude(od => od.ProductItem)
+                                .ThenInclude(pi => pi.Product)
+                        .FirstOrDefaultAsync(o => o.Id == id);
+
+                    if (order == null)
+                    {
+                        return NotFound($"Order with ID {id} not found");
+                    }
+
+                    if (string.IsNullOrEmpty(updateDto.Status))
+                    {
+                        return BadRequest("Status cannot be empty");
+                    }
+
+                    // If order is being marked as delivered
+                    if (updateDto.Status == "Delivered")
+                    {
+                        foreach (var detail in order.OrderDetails)
+                        {
+                            var item = detail.ProductItem;
+
+                            // Create warranty if applicable
+                            if (item.Product.WarrantyDuration > 0)
+                            {
+                                var warranty = new Warranty
+                                {
+                                    ItemId = item.ItemId,
+                                    StartDate = DateTime.Now.Date, // Use only date
+                                    Duration = item.Product.WarrantyDuration,
+                                    Status = "active",
+                                    Notes = $"Warranty started on delivery of order #{order.Id}"
+                                };
+                                _context.Warranties.Add(warranty);
+                            }
+                        }
+                    }
+
+                    // Update order status
+                    order.Status = updateDto.Status;
+                    order.StatusNote = updateDto.Note ?? "";
+                    order.UpdatedAt = DateTime.UtcNow;
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(new
+                    {
+                        id = order.Id,
+                        status = order.Status,
+                        statusNote = order.StatusNote,
+                        updatedAt = order.UpdatedAt,
+                        message = "Order status updated successfully"
+                    });
                 }
-
-                // Validate status
-                if (string.IsNullOrEmpty(updateDto.Status))
+                catch (Exception ex)
                 {
-                    return BadRequest("Status cannot be empty");
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, new { message = ex.Message });
                 }
-
-                // Update fields
-                order.Status = updateDto.Status;
-                order.StatusNote = updateDto.Note ?? "";  // Handle null note
-                order.UpdatedAt = DateTime.UtcNow;
-
-                // Mark as modified and save
-                _context.Entry(order).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-
-                // Return response
-                return Ok(new
-                {
-                    id = order.Id,
-                    status = order.Status,
-                    statusNote = order.StatusNote,
-                    updatedAt = order.UpdatedAt,
-                    message = "Order status updated successfully"
-                });
-            }
-            catch (DbUpdateException ex)
-            {
-                return StatusCode(500, new { message = "Database error occurred while updating order status", details = ex.InnerException?.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error updating order status", details = ex.Message });
-            }
+            });
         }
 
         [HttpGet("admin/dashboard-stats")]

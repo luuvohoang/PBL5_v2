@@ -94,6 +94,19 @@ const Orders = () => {
                                             <p>Serial Number: {item?.serialNumber || 'N/A'}</p>
                                             <p>Price: ${Number(item?.unitPrice || 0).toFixed(2)}</p>
                                             <p>Subtotal: ${Number(item?.subtotal || 0).toFixed(2)}</p>
+                                            {item?.warranty && (
+                                                <div className="warranty-info">
+                                                    <p>
+                                                        <strong>Warranty Status:</strong>
+                                                        <span data-status={item.warranty.status.toLowerCase()}>
+                                                            {item.warranty.status}
+                                                        </span>
+                                                    </p>
+                                                    <p><strong>Start Date:</strong> {new Date(item.warranty.startDate).toLocaleDateString()}</p>
+                                                    <p><strong>End Date:</strong> {new Date(item.warranty.endDate).toLocaleDateString()}</p>
+                                                    <p><strong>Duration:</strong> {item.warranty.duration} months</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

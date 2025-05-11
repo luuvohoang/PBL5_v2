@@ -5,20 +5,29 @@ namespace Backend.Models
 {
     public class Warranty
     {
-        [Key] public int WarrantyId { get; set; }
-        [Required] public int ItemId { get; set; }
+        [Key]
+        public int WarrantyId { get; set; }
+
         [Required]
+        public int ItemId { get; set; }
+
+        [Required]
+        [Column(TypeName = "date")]
         public DateTime StartDate { get; set; }
 
         [Required]
-        public int Duration { get; set; } // Months
+        public int Duration { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [Column(TypeName = "date")]
         public DateTime EndDate { get; private set; }
 
         [Required]
-        [StringLength(20)]
-        public string Status { get; set; } // active, expired, void
+        [Column(TypeName = "varchar(20)")]
+        public string Status { get; set; }  // active, expired, void
+
+        [Column(TypeName = "text")]
+        public string? Notes { get; set; }
 
         [ForeignKey("ItemId")]
         public virtual ProductItem ProductItem { get; set; }

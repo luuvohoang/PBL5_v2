@@ -181,7 +181,25 @@ const AdminOrders = () => {
                                 <tbody>
                                     {selectedOrder.orderItems?.map(item => (
                                         <tr key={item.id}>
-                                            <td>{item.productName}</td>
+                                            <td>
+                                                <div>
+                                                    <p>{item.productName}</p>
+                                                    <small>SN: {item.serialNumber}</small>
+                                                    {item.warranty && (
+                                                        <div className="warranty-details">
+                                                            <small className={`warranty-status ${item.warranty.status}`}>
+                                                                Warranty: {item.warranty.status}
+                                                            </small>
+                                                            <br />
+                                                            <small>
+                                                                {new Date(item.warranty.startDate).toLocaleDateString()}
+                                                                -
+                                                                {new Date(item.warranty.endDate).toLocaleDateString()}
+                                                            </small>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
                                             <td>{item.quantity}</td>
                                             <td>${item.price.toFixed(2)}</td>
                                             <td>${(item.price * item.quantity).toFixed(2)}</td>

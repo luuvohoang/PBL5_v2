@@ -67,6 +67,28 @@ namespace Backend.Controllers
             }
         }
 
+        [HttpGet("product/{productId}/available")]
+        public async Task<ActionResult<IEnumerable<ProductItem>>> GetAvailableItems(int productId)
+        {
+            try
+            {
+                var items = await _context.ProductItems
+                    .Where(pi => pi.ProductId == productId && pi.Status == "in_stock")
+                    .ToListAsync();
+
+                if (items == null || !items.Any())
+                {
+                    return NotFound($"No available items found for product {productId}");
+                }
+
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
         [HttpGet("{itemId}/product")]
         public async Task<ActionResult> GetItemProduct(int? itemId)
         {

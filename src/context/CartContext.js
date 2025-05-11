@@ -7,6 +7,7 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [cartCount, setCartCount] = useState(0);
+
     const [userId, setUserId] = useState(null);
 
     // Chỉ lấy userId từ localStorage một lần khi component mount

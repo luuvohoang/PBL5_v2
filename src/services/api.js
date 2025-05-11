@@ -349,12 +349,19 @@ export const getUserOrders = async (userId) => {
     }
 };
 
-export const getAvailableItems = async (productId, quantity) => {
+export const getAvailableItems = async (productId) => {
     try {
-        const response = await axios.get(`${API_URL}/productitems/available/${productId}/${quantity}`);
+        if (!productId) {
+            throw new Error('ProductId is required');
+        }
+        console.log('Fetching available items for product:', productId); // Debug log
+        const response = await axios.get(`${API_URL}/productitems/product/${productId}/available`);
         return response.data;
     } catch (error) {
         console.error('Error getting available items:', error);
+        if (error.response?.status === 404) {
+            return []; // Return empty array if no items found
+        }
         throw error;
     }
 };
@@ -374,25 +381,33 @@ export const getItemProduct = async (itemId) => {
 
 export const createOrder = async (orderData) => {
     try {
-        // Transform order details: add unitPrice from product price
-        const transformedDetails = await Promise.all(
-            orderData.orderDetails.map(async (detail) => {
-                if (!detail.itemId) {
-                    throw new Error('Missing itemId in order details');
-                }
-                const itemProduct = await getItemProduct(detail.itemId);
-                return {
-                    itemId: detail.itemId,
-                    quantity: 1,
-                    unitPrice: itemProduct.price
-                };
-            })
-        );
+        const orderDetails = [];
 
-        // Create new order data with transformed details
+        // Lấy các items có sẵn cho từng sản phẩm trong cart
+        for (const item of orderData.orderDetails) {
+            const availableItems = await getAvailableItems(item.productId);
+
+            if (!availableItems || availableItems.length === 0) {
+                throw new Error(`No available items for product ${item.productName}`);
+            }
+
+            // Lấy số lượng items cần thiết từ available items
+            const selectedItems = availableItems.slice(0, item.quantity);
+
+            // Thêm vào orderDetails
+            selectedItems.forEach(availableItem => {
+                orderDetails.push({
+                    itemId: availableItem.itemId,
+                    quantity: 1,
+                    unitPrice: item.unitPrice
+                });
+            });
+        }
+
+        // Tạo order data với items đã chọn
         const transformedOrderData = {
             ...orderData,
-            orderDetails: transformedDetails
+            orderDetails: orderDetails
         };
 
         const response = await axios.post(`${API_URL}/orders`, transformedOrderData, {
@@ -402,10 +417,7 @@ export const createOrder = async (orderData) => {
         });
         return response.data;
     } catch (error) {
-        if (error.message === 'Missing itemId in order details') {
-            throw new Error('Invalid order details: Missing item information');
-        }
-        console.error('Error creating order:', error.response?.data || error.message);
+        console.error('Error creating order:', error);
         throw error;
     }
 };
@@ -565,5 +577,25 @@ export const resetPassword = async (token, newPassword) => {
             throw new Error('Reset token not found');
         }
         throw new Error('An error occurred while resetting the password');
+    }
+};
+
+export const getWarrantyInfo = async (itemId) => {
+    try {
+        const response = await axios.get(`${API_URL}/warranties/item/${itemId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching warranty info:', error);
+        return null;
+    }
+};
+
+export const removeFromCart = async (userId, itemId) => {
+    try {
+        const response = await axios.delete(`${API_URL}/cart/${userId}/item/${itemId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to remove from cart:', error);
+        throw error;
     }
 };
