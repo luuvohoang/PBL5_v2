@@ -1,0 +1,210 @@
+.orders-page {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.order-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-details {
+    margin-bottom: 20px;
+}
+
+.order-details p {
+    margin: 8px 0;
+    color: #666;
+}
+
+.order-items {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.order-item {
+    display: flex;
+    padding: 15px;
+    background: #f8f9fa;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.order-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.item-info {
+    flex: 1;
+    padding: 10px;
+}
+
+.item-info p {
+    margin: 8px 0;
+    color: #495057;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.item-info p:first-child {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #212529;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.status.pending {
+    background: #ffd700;
+}
+
+.status.processing {
+    background: #87ceeb;
+}
+
+.status.shipping {
+    background: #98fb98;
+}
+
+.status.delivered {
+    background: #90ee90;
+}
+
+.status.cancelled {
+    background: #ffcccb;
+}
+
+.loading-container,
+.error-container {
+    padding: 20px;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.error-container {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    background-color: #f8d7da;
+}
+
+.warranty-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 8px;
+    border-left: 4px solid #4CAF50;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.warranty-info p {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.warranty-info p:first-child {
+    margin-bottom: 12px;
+}
+
+.warranty-info strong {
+    min-width: 120px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.warranty-info p:first-child span {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+/* Status-specific colors */
+.warranty-info p:first-child span[data-status="active"] {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.warranty-info p:first-child span[data-status="expired"] {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+.warranty-info p:first-child span[data-status="void"] {
+    background-color: #eeeeee;
+    color: #616161;
+    border: 1px solid #bdbdbd;
+}
+
+.warranty-status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Warranty status colors */
+.warranty-status.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.warranty-status.expired {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+.warranty-status.void {
+    background-color: #eeeeee;
+    color: #616161;
+    border: 1px solid #bdbdbd;
+}
+
+.warranty-dates {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #dee2e6;
+}
+
+.warranty-dates span {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.warranty-dates strong {
+    display: block;
+    color: #343a40;
+    margin-bottom: 4px;
+}

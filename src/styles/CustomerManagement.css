@@ -1,0 +1,167 @@
+.customer-management {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.customer-management h1 {
+    color: #1e40af;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5efff;
+    padding-bottom: 1rem;
+}
+
+.customer-list {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    overflow: auto;
+    margin: 0 auto;
+    max-width: 1200px;
+    animation: slideUp 0.4s ease-out;
+}
+
+.customer-list table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 1000px;
+    background: linear-gradient(to right, #ffffff, #f0f7ff);
+}
+
+.customer-list th {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    padding: 1.25rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #1e40af;
+}
+
+.customer-list td {
+    padding: 1.25rem;
+    border-bottom: 1px solid #e5efff;
+    transition: all 0.2s ease;
+}
+
+.customer-list tr {
+    animation: fadeIn 0.3s ease-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.customer-list tr:hover {
+    background: #f0f7ff;
+    box-shadow: inset 0 0 0 1px #2563eb20;
+}
+
+.search-filter {
+    margin: 0 auto 2rem;
+    display: flex;
+    gap: 1rem;
+    max-width: 1200px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;  /* Changed padding right to 2.5rem */
+    border: 1px solid #e5efff;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%232563eb' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1-11 0z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;  /* Changed position to right */
+    background-size: 1rem;
+}
+
+.date-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #e5efff;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus, .date-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.status-filter {
+    padding: 0.75rem;
+    border: 1px solid #e5efff;
+    border-radius: 6px;
+    color: #1e40af;
+    background: white;
+    min-width: 150px;
+}
+
+.date-range-filter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #e5efff;
+}
+
+.date-range-filter span {
+    color: #64748b;
+}
+
+.date-range-filter .date-input {
+    padding: 0.5rem;
+    border: 1px solid #e5efff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    min-width: 130px;
+}
+
+.clear-date {
+    padding: 0.5rem 1rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.clear-date:hover {
+    background: #dc2626;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
