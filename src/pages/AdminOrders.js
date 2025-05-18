@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getAllOrders, updateOrderStatus } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/AdminOrders.css';
@@ -35,26 +35,21 @@ const AdminOrders = () => {
         }
     }, [navigate]);
 
-    useEffect(() => {
-        fetchOrders();
-    }, [fetchOrders]); // Thêm fetchOrders vào dependencies
-
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
+            setLoading(true);
             const data = await getAllOrders();
-            if (!data) {
-                throw new Error('No data received');
-            }
-            setOrders(Array.isArray(data) ? data : []);
+            setOrders(data);
         } catch (error) {
             console.error('Error fetching orders:', error);
-            if (error.message.includes('User not authenticated')) {
-                navigate('/login');
-            }
         } finally {
             setLoading(false);
         }
-    };
+    }, []); // Empty dependency array since it doesn't depend on any props or state
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]); // Add fetchOrders as dependency
 
     const handleStatusUpdate = async (orderId, newStatus) => {
         try {

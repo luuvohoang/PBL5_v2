@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { updateUserProfile, getUserProfile } from '../services/api';
 import '../styles/Profile.css';
@@ -16,13 +16,7 @@ const Profile = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (user?.id) {
-            fetchUserProfile();
-        }
-    }, [user?.id]);
-
-    const fetchUserProfile = async () => {
+    const fetchUserProfile = useCallback(async () => {
         try {
             const data = await getUserProfile(user.id);
             setUserData(data);
@@ -35,7 +29,13 @@ const Profile = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user.id]);
+
+    useEffect(() => {
+        if (user?.id) {
+            fetchUserProfile();
+        }
+    }, [user?.id, fetchUserProfile]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getDashboardStats, getRevenueByPeriod, getTopProducts, getOrderStats } from '../services/api';
 import '../styles/Dashboard.css';
 import {
@@ -64,7 +64,7 @@ const Dashboard = () => {
         fetchOrderStats();
     }, []);
 
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async () => {
         try {
             setLoading(true);
             // Lấy thống kê tổng quan
@@ -91,7 +91,7 @@ const Dashboard = () => {
             console.error('Error fetching dashboard data:', error);
             setLoading(false);
         }
-    };
+    }, [period]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -130,7 +130,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchDashboardData();
-    }, [fetchDashboardData]); // Thêm fetchDashboardData vào dependencies
+    }, [fetchDashboardData, period]); // Add all dependencies
 
     const PeriodSelector = () => (
         <div className="period-selector">
@@ -145,45 +145,6 @@ const Dashboard = () => {
             </select>
         </div>
     );
-
-    /* eslint-disable-next-line */
-    const RevenueChart = () => {
-        if (!revenueData.length) return <div>No revenue data available</div>;
-
-        const chartData = {
-            labels: revenueData.map(item => item.date),
-            datasets: [
-                {
-                    label: 'Revenue',
-                    data: revenueData.map(item => item.revenue),
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                },
-                {
-                    label: 'Orders',
-                    data: revenueData.map(item => item.orders),
-                    fill: false,
-                    borderColor: 'rgb(255, 99, 132)',
-                    tension: 0.1
-                }
-            ]
-        };
-
-        return (
-            <div className="revenue-chart">
-                <h2>Revenue Trends</h2>
-                <Line data={chartData} options={{
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }} />
-            </div>
-        );
-    };
 
     if (loading) return <div className="loading">Loading dashboard data...</div>;
 

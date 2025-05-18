@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getProducts, searchProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
@@ -18,11 +18,30 @@ const Products = () => {
     const [selectedManufacturer, setSelectedManufacturer] = useState('');
     const [manufacturers, setManufacturers] = useState([]);
 
+    const loadProducts = useCallback(async () => {
+        try {
+            setLoading(true);
+            let data;
+            if (searchQuery) {
+                data = await searchProducts(searchQuery);
+            } else {
+                data = await getProducts(category, currentPage);
+            }
+            setProducts(data.items || []);
+            setTotalPages(data.totalPages || 1);
+        } catch (err) {
+            setError('Failed to load products');
+            console.error('Error:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, [searchQuery, category, currentPage]);
+
     useEffect(() => {
         loadProducts();
         // Reset manufacturer filter when category changes
         setSelectedManufacturer('');
-    }, [searchQuery, category, currentPage]);
+    }, [loadProducts]);
 
     useEffect(() => {
         // Extract unique manufacturers from products
@@ -31,35 +50,6 @@ const Products = () => {
             setManufacturers(uniqueManufacturers);
         }
     }, [products]);
-
-    const loadProducts = async () => {
-        try {
-            setLoading(true);
-            let data;
-
-            if (searchQuery) {
-                data = await searchProducts(searchQuery);
-            } else {
-                data = await getProducts(category, currentPage);
-            }
-
-            // Thêm kiểm tra data
-            if (!data) {
-                setProducts([]);
-                setError('No products found');
-                return;
-            }
-
-            setProducts(data.items);
-            setTotalPages(data.totalPages);
-        } catch (err) {
-            setError('Failed to load products');
-            console.error('Error:', err);
-            setProducts([]); // Set empty array on error
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const getSortedProducts = () => {
         if (!products) return [];
