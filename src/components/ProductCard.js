@@ -8,6 +8,7 @@ const ProductCard = ({ product, onDelete }) => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
 
+    /* eslint-disable-next-line */
     const handleAddToCart = async (e) => {
         e.preventDefault(); // Prevent navigation when clicking the button
         if (!user) {

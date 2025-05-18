@@ -20,7 +20,7 @@ const EditProduct = () => {
 
     useEffect(() => {
         loadProductAndItems();
-    }, [id]);
+    }, [loadProductAndItems]);
 
     const loadProductAndItems = async () => {
         try {

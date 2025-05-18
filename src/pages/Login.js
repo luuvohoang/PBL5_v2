@@ -98,17 +98,12 @@ const Login = () => {
                     </button>
 
                     <div className="auth-links">
-                        <a
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setIsForgotPassword(!isForgotPassword);
-                                setError('');
-                                setSuccessMessage('');
-                            }}
+                        <button
+                            className="forgot-password-link"
+                            onClick={() => navigate('/reset-password')}
                         >
-                            {isForgotPassword ? 'Back to Login' : 'Forgot Password?'}
-                        </a>
+                            Forgot Password?
+                        </button>
                     </div>
 
                     <div className="divider">

@@ -35,6 +35,10 @@ const AdminOrders = () => {
         }
     }, [navigate]);
 
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]); // Thêm fetchOrders vào dependencies
+
     const fetchOrders = async () => {
         try {
             const data = await getAllOrders();

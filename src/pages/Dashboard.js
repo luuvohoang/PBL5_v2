@@ -128,6 +128,10 @@ const Dashboard = () => {
         fetchRevenueData();
     }, [period]);
 
+    useEffect(() => {
+        fetchDashboardData();
+    }, [fetchDashboardData]); // Thêm fetchDashboardData vào dependencies
+
     const PeriodSelector = () => (
         <div className="period-selector">
             <select
@@ -142,6 +146,7 @@ const Dashboard = () => {
         </div>
     );
 
+    /* eslint-disable-next-line */
     const RevenueChart = () => {
         if (!revenueData.length) return <div>No revenue data available</div>;
 

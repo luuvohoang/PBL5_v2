@@ -151,7 +151,7 @@ const ProductManagement = () => {
         }
     };
 
-    const handleDeleteProduct = async (id) => {
+    const handleDeleteProduct = useCallback(async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
                 await deleteProduct(id);
@@ -160,7 +160,7 @@ const ProductManagement = () => {
                 console.error('Error deleting product:', error);
             }
         }
-    };
+    }, [currentPage, fetchProducts]);
 
     const handlePageChange = useCallback((newPage) => {
         if (newPage !== currentPage) {

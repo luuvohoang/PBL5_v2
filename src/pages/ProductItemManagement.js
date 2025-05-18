@@ -14,7 +14,7 @@ const ProductItemManagement = () => {
 
     useEffect(() => {
         loadProductAndItems();
-    }, [id]);
+    }, [loadProductAndItems]); // Thêm loadProductAndItems vào dependencies
 
     const loadProductAndItems = async () => {
         try {

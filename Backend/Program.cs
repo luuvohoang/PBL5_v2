@@ -66,9 +66,9 @@ builder.Services.AddSwaggerGen(c =>
 // Add email configuration
 builder.Services.Configure<EmailSettings>(options =>
 {
-    options.SystemEmail = builder.Configuration["EmailSettings:SystemEmail"] 
+    options.SystemEmail = builder.Configuration["EmailSettings:SystemEmail"]
         ?? Environment.GetEnvironmentVariable("EMAIL_SYSTEM");
-    options.AppPassword = builder.Configuration["EmailSettings:AppPassword"] 
+    options.AppPassword = builder.Configuration["EmailSettings:AppPassword"]
         ?? Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
     options.DisplayName = builder.Configuration["EmailSettings:DisplayName"];
 });

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout, searchProducts } from '../services/api';
+import { logout } from '../services/api';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
+    /* eslint-disable-next-line */
     const [showCategories, setShowCategories] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const { cartCount } = useCart();

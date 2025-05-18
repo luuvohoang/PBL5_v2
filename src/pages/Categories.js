@@ -3,7 +3,9 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 const Categories = () => {
     const fixedCategories = ['cpu', 'gpu', 'motherboard', 'ram'];
-    const [loading, setLoading] = useState(true);
+    /* eslint-disable-next-line */
+    const [loading, setLoading] = useState(false);
+    /* eslint-disable-next-line */
     const [error, setError] = useState(null);
 
     if (loading) return <LoadingSpinner />;
