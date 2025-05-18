@@ -90,10 +90,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", builder =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        builder.WithOrigins("https://playful-truffle-81b1d0.netlify.app")
                .AllowAnyHeader()
                .AllowAnyMethod()
-               .AllowCredentials();  // Add this line
+               .AllowCredentials();
     });
 });
 

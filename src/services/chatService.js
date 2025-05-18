@@ -3,7 +3,7 @@ import * as signalR from '@microsoft/signalr';
 class ChatService {
     constructor() {
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl('http://localhost:5000/chatHub', {
+            .withUrl('https://6e94-2405-4802-6ec9-7860-b1a5-9958-e6b8-3265.ngrok-free.app/chatHub', {
                 withCredentials: true,
                 skipNegotiation: true,
                 transport: signalR.HttpTransportType.WebSockets

@@ -13,7 +13,7 @@ axios.interceptors.request.use(
     }
 );
 
-const API_URL = 'http://localhost:5000/api';  // Make sure this matches your backend URL
+const API_URL = 'https://6e94-2405-4802-6ec9-7860-b1a5-9958-e6b8-3265.ngrok-free.app/api';  // Make sure this matches your backend URL
 
 export const getProducts = async (category, page = 1) => {
     const response = await axios.get(
