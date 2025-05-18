@@ -35,7 +35,7 @@ const Products = () => {
         } finally {
             setLoading(false);
         }
-    }, [searchQuery, category, currentPage]);
+    }, [category, currentPage, searchQuery]);
 
     useEffect(() => {
         loadProducts();

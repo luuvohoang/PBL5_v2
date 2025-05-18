@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductDetails, updateProductItems } from '../services/api';
 import '../styles/ProductItemManagement.css';
@@ -12,11 +12,7 @@ const ProductItemManagement = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [newSerialNumber, setNewSerialNumber] = useState('');
 
-    useEffect(() => {
-        loadProductAndItems();
-    }, [loadProductAndItems]); // Thêm loadProductAndItems vào dependencies
-
-    const loadProductAndItems = async () => {
+    const loadProductAndItems = useCallback(async () => {
         try {
             const details = await getProductDetails(id);
             setProductDetails(details);
@@ -26,7 +22,11 @@ const ProductItemManagement = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        loadProductAndItems();
+    }, [loadProductAndItems]);
 
     const handleEditItem = (item) => {
         setEditingItem({ ...item });

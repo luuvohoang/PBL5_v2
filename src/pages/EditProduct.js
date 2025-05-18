@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById, updateProduct } from '../services/api';
 import '../styles/EditProduct.css';
@@ -18,11 +18,7 @@ const EditProduct = () => {
         'Discontinued': 'Discontinued'
     };
 
-    useEffect(() => {
-        loadProductAndItems();
-    }, [loadProductAndItems]);
-
-    const loadProductAndItems = async () => {
+    const loadProductAndItems = useCallback(async () => {
         try {
             const productData = await getProductById(id);
             setProduct(productData);
@@ -32,7 +28,11 @@ const EditProduct = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        loadProductAndItems();
+    }, [loadProductAndItems]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

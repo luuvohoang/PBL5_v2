@@ -18,6 +18,7 @@ const Profile = () => {
 
     const fetchUserProfile = useCallback(async () => {
         try {
+            if (!user?.id) return;
             const data = await getUserProfile(user.id);
             setUserData(data);
             setFormData({
@@ -29,13 +30,11 @@ const Profile = () => {
         } finally {
             setLoading(false);
         }
-    }, [user.id]);
+    }, [user?.id]);
 
     useEffect(() => {
-        if (user?.id) {
-            fetchUserProfile();
-        }
-    }, [user?.id, fetchUserProfile]);
+        fetchUserProfile();
+    }, [fetchUserProfile]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
