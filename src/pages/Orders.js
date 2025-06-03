@@ -6,59 +6,107 @@ import '../styles/Orders.css';
 const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
-        fetchOrders();
-    }, [user, navigate]);
+        let isMounted = true;
 
-    const fetchOrders = async () => {
-        try {
-            const data = await getUserOrders(user.id);
-            setOrders(data);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching orders:', error);
-            setLoading(false);
-        }
-    };
+        const loadOrders = async () => {
+            try {
+                if (!user?.id) return;
 
-    if (loading) return <div>Loading...</div>;
+                setLoading(true);
+                const response = await getUserOrders(user.id);
+
+                if (isMounted) {
+                    if (Array.isArray(response)) {
+                        setOrders(response);
+                    } else {
+                        setOrders([]);
+                        setError('Invalid response format');
+                    }
+                }
+            } catch (error) {
+                if (isMounted) {
+                    console.error('Error fetching orders:', error);
+                    setError(error.message);
+                    setOrders([]);
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadOrders();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [user?.id]); // Only depend on user.id
+
+    if (!user) {
+        navigate('/login');
+        return null;
+    }
+
+    if (loading) {
+        return <div className="loading-container">Loading orders...</div>;
+    }
+
+    if (error) {
+        return <div className="error-container">Error: {error}</div>;
+    }
 
     return (
         <div className="orders-page">
             <h1>Order History</h1>
-            {orders.length === 0 ? (
+            {orders?.length === 0 ? (
                 <p>No orders found</p>
             ) : (
                 <div className="orders-list">
-                    {orders.map(order => (
-                        <div key={order.id} className="order-card">
+                    {orders?.map(order => (
+                        <div key={order?.id || Math.random()} className="order-card">
                             <div className="order-header">
-                                <h3>Order #{order.id}</h3>
-                                <span className={`status ${order.status.toLowerCase()}`}>
-                                    {order.status}
+                                <h3>Order #{order?.id || 'N/A'}</h3>
+                                <span className={`status ${(order?.status || 'pending').toLowerCase()}`}>
+                                    {order?.status || 'Pending'}
                                 </span>
                             </div>
                             <div className="order-details">
-                                <p>Date: {new Date(order.orderDate).toLocaleDateString()}</p>
-                                <p>Total: ${order.totalAmount.toFixed(2)}</p>
-                                <p>Shipping Address: {order.shippingAddress}</p>
-                                <p>Payment Method: {order.paymentMethod}</p>
+                                <p>Date: {order?.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}</p>
+                                <p>Email: {order?.email || 'N/A'}</p>
+                                <p>Phone: {order?.phoneNumber || 'N/A'}</p>
+                                <p>Shipping Address: {order?.shippingAddress || 'N/A'}</p>
+                                <p>Payment Method: {order?.paymentMethod || 'COD'}</p>
+                                <p>Subtotal: ${Number(order?.subTotal || 0).toFixed(2)}</p>
+                                <p>Shipping Fee: ${Number(order?.shippingFee || 0).toFixed(2)}</p>
+                                <p>Total Amount: ${Number(order?.totalAmount || 0).toFixed(2)}</p>
                             </div>
                             <div className="order-items">
-                                {order.orderDetails.map(item => (
-                                    <div key={item.id} className="order-item">
-                                        <img src={item.product.imageUrl} alt={item.product.name} />
+                                {(order?.items || []).map((item, index) => (
+                                    <div key={item?.id || index} className="order-item">
                                         <div className="item-info">
-                                            <p>{item.product.name}</p>
-                                            <p>Quantity: {item.quantity}</p>
-                                            <p>Price: ${item.unitPrice.toFixed(2)}</p>
+                                            <p>Product: {item?.productName || 'Unknown Product'}</p>
+                                            <p>Serial Number: {item?.serialNumber || 'N/A'}</p>
+                                            <p>Price: ${Number(item?.unitPrice || 0).toFixed(2)}</p>
+                                            <p>Subtotal: ${Number(item?.subtotal || 0).toFixed(2)}</p>
+                                            {item?.warranty && (
+                                                <div className="warranty-info">
+                                                    <p>
+                                                        <strong>Warranty Status:</strong>
+                                                        <span data-status={item.warranty.status.toLowerCase()}>
+                                                            {item.warranty.status}
+                                                        </span>
+                                                    </p>
+                                                    <p><strong>Start Date:</strong> {new Date(item.warranty.startDate).toLocaleDateString()}</p>
+                                                    <p><strong>End Date:</strong> {new Date(item.warranty.endDate).toLocaleDateString()}</p>
+                                                    <p><strong>Duration:</strong> {item.warranty.duration} months</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

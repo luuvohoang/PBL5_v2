@@ -22,6 +22,11 @@ namespace Backend.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+<<<<<<< HEAD
+=======
+        public DbSet<ProductItem> ProductItems { get; set; }
+        public DbSet<Warranty> Warranties { get; set; }
+>>>>>>> 16/05
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -131,12 +136,67 @@ namespace Backend.Data
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Order)
                 .WithMany(o => o.OrderDetails)
+<<<<<<< HEAD
                 .HasForeignKey(od => od.OrderId);
 
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Product)
                 .WithMany()
                 .HasForeignKey(od => od.ProductId);
+=======
+                .HasForeignKey(od => od.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(od => od.ProductItem)
+                .WithMany()
+                .HasForeignKey(od => od.ItemId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ProductItem>()
+                .HasIndex(p => p.SerialNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<Warranty>()
+                .Property(w => w.EndDate)
+                .HasComputedColumnSql("DATEADD(MONTH, [Duration], [StartDate])");
+
+            // Configure ProductItem relationships
+            modelBuilder.Entity<ProductItem>()
+                .HasOne(pi => pi.Product)
+                .WithMany()
+                .HasForeignKey(pi => pi.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProductItem>()
+                .HasIndex(pi => pi.SerialNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<ProductItem>()
+                .Property(pi => pi.Status)
+                .HasConversion<string>()
+                .HasMaxLength(30);
+
+            modelBuilder.Entity<ProductItem>(entity =>
+            {
+                entity.HasOne(pi => pi.Product)
+                    .WithMany(p => p.ProductItems)
+                    .HasForeignKey(pi => pi.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configure Warranty relationships
+            modelBuilder.Entity<Warranty>()
+                .HasOne(w => w.ProductItem)
+                .WithMany(pi => pi.Warranties)
+                .HasForeignKey(w => w.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Warranty>()
+                .Property(w => w.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+>>>>>>> 16/05
 
             // Seed initial data
             modelBuilder.Entity<Product>().HasData(

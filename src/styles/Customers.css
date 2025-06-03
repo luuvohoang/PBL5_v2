@@ -1,7 +1,14 @@
 .customer-container {
-    padding: 20px;
-    max-width: 1200px;
+    opacity: 1;
+    animation: fadeIn 0.3s ease-in;
+    padding: 2rem;
+    max-width: 1400px;
     margin: 0 auto;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .customer-header {
@@ -18,6 +25,18 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .customer-table th,
@@ -33,6 +52,10 @@
     color: #333;
 }
 
+.customer-table tr {
+    transition: background-color 0.2s ease;
+}
+
 .customer-table tr:hover {
-    background-color: #f8f8f8;
+    background-color: #f7fafc;
 }

@@ -19,6 +19,13 @@ import ProductManagement from './pages/ProductManagement';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import Orders from './pages/Orders';
+import AdminOrders from './pages/AdminOrders';
+import Dashboard from './pages/Dashboard';
+import ErrorBoundary from './components/ErrorBoundary';
+import ResetPassword from './pages/ResetPassword';
+import ProductItemManagement from './pages/ProductItemManagement';
+import './styles/common-animations.css';
+import './styles/auth.css';
 
 function App() {
     return (
@@ -29,10 +36,12 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/products" element={<Products />} />
+                        <Route path="/products/search" element={<Products />} />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/product/:id" element={<ProductDetail />} />
+                        <Route path="/products/:id" element={<ProductDetail />} />
                         <Route
                             path="/employees"
                             element={
@@ -91,6 +100,34 @@ function App() {
                         <Route path="/checkout" element={<Checkout />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/orders" element={<Orders />} />
+                        <Route
+                            path="/admin/orders"
+                            element={
+                                <PrivateRoute
+                                    element={
+                                        <ErrorBoundary>
+                                            <AdminOrders />
+                                        </ErrorBoundary>
+                                    }
+                                    allowedRoles={['Admin', 'Manager', 'Staff']}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/dashboard"
+                            element={
+                                <PrivateRoute
+                                    element={
+                                        <ErrorBoundary>
+                                            <Dashboard />
+                                        </ErrorBoundary>
+                                    }
+                                    allowedRoles={['Admin', 'Manager', 'Staff']}
+                                />
+                            }
+                        />
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route path="/products/:id/items" element={<ProductItemManagement />} />
                     </Routes>
                 </div>
             </Router>

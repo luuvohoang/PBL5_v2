@@ -5,10 +5,26 @@
 }
 
 .profile-container {
+    opacity: 1;
+    animation: fadeIn 0.3s ease-in;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
     background: #fff;
-    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section {
+    animation: slideUp 0.3s ease-out;
+}
+
+.profile-card {
+    transition: transform 0.2s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
 }
 
 .profile-info {

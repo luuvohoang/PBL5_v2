@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getCustomers, sendMessage, getConversation } from '../services/api';
 import { chatService } from '../services/chatService';
 import '../styles/Chat.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Chat = () => {
     const [customers, setCustomers] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [loading, setLoading] = useState(true);
     const currentUser = JSON.parse(localStorage.getItem('user'));
 
     const loadMessages = useCallback(async () => {
@@ -60,8 +62,10 @@ const Chat = () => {
         try {
             const data = await getCustomers();
             setCustomers(data);
+            setLoading(false);
         } catch (error) {
             console.error('Error loading customers:', error);
+            setLoading(false);
         }
     };
 
@@ -80,6 +84,8 @@ const Chat = () => {
             console.error('Error sending message:', error);
         }
     };
+
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div className="chat-container">

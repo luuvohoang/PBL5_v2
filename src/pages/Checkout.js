@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile, createOrder } from '../services/api';
+import { getProvinces, getDistricts, getWards, calculateShippingFee } from '../services/shippingService';
 import '../styles/Checkout.css';
 
 const Checkout = () => {
@@ -13,6 +14,15 @@ const Checkout = () => {
         phoneNumber: '',
         paymentMethod: 'cod'
     });
+
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [selectedProvince, setSelectedProvince] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState('');
+    const [selectedWard, setSelectedWard] = useState('');
+    const [shippingMethod, setShippingMethod] = useState('2'); // Default to Standard shipping
+    const [shippingFee, setShippingFee] = useState(0);
 
     // Fetch user profile when component mounts
     useEffect(() => {
@@ -32,12 +42,76 @@ const Checkout = () => {
         };
 
         fetchUserProfile();
+        loadProvinces();
     }, [user?.id]);
+
+    const loadProvinces = async () => {
+        try {
+            const data = await getProvinces();
+            setProvinces(data);
+        } catch (error) {
+            console.error('Error loading provinces:', error);
+        }
+    };
+
+    const handleProvinceChange = async (e) => {
+        const provinceId = e.target.value;
+        setSelectedProvince(provinceId);
+        setSelectedDistrict('');
+        setSelectedWard('');
+        try {
+            const data = await getDistricts(provinceId);
+            setDistricts(data);
+        } catch (error) {
+            console.error('Error loading districts:', error);
+        }
+    };
+
+    const handleDistrictChange = async (e) => {
+        const districtId = e.target.value;
+        setSelectedDistrict(districtId);
+        setSelectedWard('');
+        try {
+            const data = await getWards(districtId);
+            setWards(data);
+        } catch (error) {
+            console.error('Error loading wards:', error);
+        }
+    };
+
+    const handleWardChange = async (e) => {
+        const wardCode = e.target.value;
+        setSelectedWard(wardCode);
+        calculateShippingCost(wardCode);
+    };
+
+    const calculateShippingCost = async (wardCode) => {
+        if (!selectedDistrict || !wardCode) return;
+
+        try {
+            const totalWeight = cart.reduce((sum, item) => sum + (item.weight || 500) * item.quantity, 0);
+            const totalValue = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            const params = {
+                serviceTypeId: parseInt(shippingMethod),
+                insuranceValue: Math.floor(totalValue * 23000), // Convert to VND
+                toWardCode: wardCode,
+                toDistrictId: parseInt(selectedDistrict),
+                fromDistrictId: 1530, // Example: District ID of shop location
+                weight: totalWeight
+            };
+
+            const feeData = await calculateShippingFee(params);
+            setShippingFee(feeData.total);
+        } catch (error) {
+            console.error('Error calculating shipping fee:', error);
+        }
+    };
 
     const total = cart.reduce((sum, item) => {
         const itemPrice = item.sale ? item.price * (1 - item.sale.discountPercent / 100) : item.price;
         return sum + itemPrice * item.quantity;
-    }, 0);
+    }, 0) + shippingFee; // Remove VND conversion
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,27 +121,49 @@ const Checkout = () => {
             return;
         }
 
+        if (!selectedProvince || !selectedDistrict || !selectedWard) {
+            alert('Please select complete shipping address');
+            return;
+        }
+
         try {
+            const selectedProvinceName = provinces.find(p => p.ProvinceID.toString() === selectedProvince)?.ProvinceName;
+            const selectedDistrictName = districts.find(d => d.DistrictID.toString() === selectedDistrict)?.DistrictName;
+            const selectedWardName = wards.find(w => w.WardCode === selectedWard)?.WardName;
+
+            // Chuẩn bị order details với productId thay vì itemId
+            const orderDetails = cart.map(item => ({
+                productId: item.productId,
+                productName: item.name,
+                quantity: item.quantity,
+                unitPrice: item.sale
+                    ? item.price * (1 - item.sale.discountPercent / 100)
+                    : item.price
+            }));
+
+            const shippingAddress = `${formData.shippingAddress}, ${selectedWardName}, ${selectedDistrictName}, ${selectedProvinceName}`;
+
             const orderData = {
                 userId: user.id,
-                shippingAddress: formData.shippingAddress,
+                shippingAddress: shippingAddress,
                 phoneNumber: formData.phoneNumber,
                 paymentMethod: formData.paymentMethod,
-                orderDetails: cart.map(item => ({
-                    productId: item.productId,
-                    quantity: item.quantity,
-                    unitPrice: item.sale
-                        ? item.price * (1 - item.sale.discountPercent / 100)
-                        : item.price
-                }))
+                province: selectedProvinceName,
+                district: selectedDistrictName,
+                ward: selectedWardName,
+                shippingMethod: shippingMethod === '1' ? 'Express' : shippingMethod === '2' ? 'Standard' : 'Saving',
+                shippingFee: shippingFee,
+                orderDetails: orderDetails
             };
 
             const result = await createOrder(orderData);
-            alert('Order placed successfully!');
-            navigate('/orders');
+            if (result) {
+                alert('Order placed successfully!');
+                navigate('/orders');
+            }
         } catch (error) {
             console.error('Error placing order:', error);
-            alert(error.response?.data?.message || 'Failed to place order. Please try again.');
+            alert(error.message || 'Failed to place order. Please try again.');
         }
     };
 
@@ -95,11 +191,18 @@ const Checkout = () => {
                     <h2>Order Summary</h2>
                     {cart.map(item => (
                         <div key={item.productId} className="order-item">
-                            <img src={item.imageUrl} alt={item.name} />
+                            <img 
+                                src={`./assets/${item.imageUrl}`} 
+                                alt={item.name}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = './assets/images/default.jpg';
+                                }}
+                            />
                             <div className="item-details">
                                 <h3>{item.name}</h3>
                                 <p>Quantity: {item.quantity}</p>
-                                <p>Price: ${(item.sale
+                                <p className="price">Price: ${(item.sale
                                     ? item.price * (1 - item.sale.discountPercent / 100)
                                     : item.price).toFixed(2)}</p>
                             </div>
@@ -112,6 +215,64 @@ const Checkout = () => {
 
                 <form onSubmit={handleSubmit} className="checkout-form">
                     <h2>Shipping Information</h2>
+
+                    <div className="form-group">
+                        <label>Province/City</label>
+                        <select value={selectedProvince} onChange={handleProvinceChange} required>
+                            <option value="">Select Province/City</option>
+                            {provinces.map(province => (
+                                <option key={province.ProvinceID} value={province.ProvinceID}>
+                                    {province.ProvinceName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>District</label>
+                        <select value={selectedDistrict} onChange={handleDistrictChange} required disabled={!selectedProvince}>
+                            <option value="">Select District</option>
+                            {districts.map(district => (
+                                <option key={district.DistrictID} value={district.DistrictID}>
+                                    {district.DistrictName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Ward</label>
+                        <select value={selectedWard} onChange={handleWardChange} required disabled={!selectedDistrict}>
+                            <option value="">Select Ward</option>
+                            {wards.map(ward => (
+                                <option key={ward.WardCode} value={ward.WardCode}>
+                                    {ward.WardName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Shipping Method</label>
+                        <select
+                            value={shippingMethod}
+                            onChange={(e) => {
+                                setShippingMethod(e.target.value);
+                                if (selectedWard) {
+                                    calculateShippingCost(selectedWard);
+                                }
+                            }}
+                        >
+                            <option value="1">Express</option>
+                            <option value="2">Standard</option>
+                            <option value="3">Saving</option>
+                        </select>
+                    </div>
+
+                    <div className="shipping-fee">
+                        <p>Shipping Fee: ${shippingFee.toFixed(2)}</p>
+                    </div>
+
                     <div className="form-group">
                         <label>Shipping Address</label>
                         <textarea
@@ -142,6 +303,23 @@ const Checkout = () => {
                             <option value="bank">Bank Transfer</option>
                         </select>
                     </div>
+
+                    {formData.paymentMethod === 'bank' && (
+                        <div className="bank-transfer-info">
+                            <h3>Bank Transfer Information</h3>
+                            <p>Quí khách chuyển khoản qua ngân hàng với nội dung: Số điện thoại + Họ Tên</p>
+                            <div className="bank-details">
+                                <p><strong>STK:</strong> 0337773018</p>
+                                <p><strong>Ngân hàng:</strong> MBBANK</p>
+                                <p><strong>Tên:</strong> PHAN THANH KIET</p>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="order-total">
+                        <h3>Total (including shipping): ${total.toFixed(2)}</h3>
+                    </div>
+
                     <button type="submit" className="place-order-button">
                         Place Order
                     </button>

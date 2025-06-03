@@ -6,6 +6,10 @@ using Backend.Data;
 using Backend.Models;
 using Backend.Models.DTOs;
 using Microsoft.Extensions.Logging;
+<<<<<<< HEAD
+=======
+using Backend.Services;
+>>>>>>> 16/05
 
 namespace Backend.Controllers
 {
@@ -15,11 +19,24 @@ namespace Backend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<AuthController> _logger;
+<<<<<<< HEAD
 
         public AuthController(ApplicationDbContext context, ILogger<AuthController> logger)
         {
             _context = context;
             _logger = logger;
+=======
+        private readonly IEmailService _emailService;
+
+        public AuthController(
+            ApplicationDbContext context, 
+            ILogger<AuthController> logger,
+            IEmailService emailService)
+        {
+            _context = context;
+            _logger = logger;
+            _emailService = emailService;
+>>>>>>> 16/05
         }
 
         [HttpPost("register")]
@@ -91,6 +108,73 @@ namespace Backend.Controllers
             }
         }
 
+<<<<<<< HEAD
+=======
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto request)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+                if (user == null)
+                {
+                    return Ok(); // Still return OK to prevent email enumeration
+                }
+
+                var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+                user.ResetToken = token;
+                user.ResetTokenExpiry = DateTime.UtcNow.AddHours(24);
+                
+                await _context.SaveChangesAsync();
+
+                // Send password reset email
+                var emailSent = await _emailService.SendPasswordResetEmailAsync(user.Email, token);
+                
+                if (!emailSent)
+                {
+                    _logger.LogError($"Failed to send password reset email to {user.Email}");
+                    return StatusCode(500, "Failed to send password reset email");
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Forgot password error: {ex.Message}", ex);
+                return StatusCode(500, "An error occurred. Please try again later.");
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto request)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => 
+                    u.ResetToken == request.Token && 
+                    u.ResetTokenExpiry > DateTime.UtcNow);
+
+                if (user == null)
+                {
+                    return BadRequest("Invalid or expired reset token");
+                }
+
+                user.PasswordHash = HashPassword(request.NewPassword);
+                user.ResetToken = null;
+                user.ResetTokenExpiry = null;
+
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Reset password error: {ex.Message}", ex);
+                return StatusCode(500, "An error occurred. Please try again later.");
+            }
+        }
+
+>>>>>>> 16/05
         private string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
@@ -98,4 +182,18 @@ namespace Backend.Controllers
             return Convert.ToBase64String(hashedBytes);
         }
     }
+<<<<<<< HEAD
+=======
+
+    public class ForgotPasswordDto
+    {
+        public string Email { get; set; }
+    }
+
+    public class ResetPasswordDto
+    {
+        public string Token { get; set; }
+        public string NewPassword { get; set; }
+    }
+>>>>>>> 16/05
 }

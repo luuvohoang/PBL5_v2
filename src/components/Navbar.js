@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '../services/api';
+import { logout, searchProducts } from '../services/api';
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
     const [showCategories, setShowCategories] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const { cartCount } = useCart();
+
+    const categoryLinks = [
+        { name: 'CPUs', path: '/products?category=CPU' },
+        { name: 'GPUs', path: '/products?category=GPU' },
+        { name: 'Motherboards', path: '/products?category=Motherboard' },
+        { name: 'RAM', path: '/products?category=RAM' }
+    ];
+
+    const handleCategoryClick = (categoryPath) => {
+        console.log('Navigating to:', categoryPath);
+        navigate(categoryPath);
+    };
 
     const handleLogout = () => {
         logout();
@@ -17,28 +32,24 @@ const Navbar = () => {
 
         switch (user.role) {
             case 'Admin':
-                return (
-                    <>
-                        <Link to="/employees">Employee Management</Link>
-                        <Link to="/customers">Customer Management</Link>
-                        <Link to="/ProductManagement">Product Management</Link>
-                        <Link to="/chat">Staff Chat</Link>
-                    </>
-                );
             case 'Manager':
                 return (
                     <>
+                        <Link to="/dashboard">Dashboard</Link>
                         <Link to="/employees">Employee Management</Link>
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
+                        <Link to="/admin/orders">Order Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
             case 'Staff':
                 return (
                     <>
+                        <Link to="/dashboard">Dashboard</Link>
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
+                        <Link to="/admin/orders">Order Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
@@ -46,6 +57,17 @@ const Navbar = () => {
                 return <Link to="/customer-chat">Support Chat</Link>;
             default:
                 return null;
+        }
+    };
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!searchTerm.trim()) return;
+
+        try {
+            navigate(`/products/search?q=${encodeURIComponent(searchTerm.trim())}`);
+        } catch (error) {
+            console.error('Search error:', error);
         }
     };
 
@@ -66,10 +88,17 @@ const Navbar = () => {
             <nav className="navbar-main">
                 <div className="container">
                     <Link to="/" className="logo">PC Parts Store</Link>
-                    <div className="search-bar">
-                        <input type="text" placeholder="Search products..." />
-                        <button><i className="fas fa-search"></i></button>
-                    </div>
+                    <form className="search-bar" onSubmit={handleSearch}>
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button type="submit">
+                            <i className="fas fa-search"></i>
+                        </button>
+                    </form>
                     <div className="nav-actions">
                         {user ? (
                             <>
@@ -86,7 +115,9 @@ const Navbar = () => {
                         )}
                         <Link to="/cart" className="cart-icon">
                             <i className="fas fa-shopping-cart"></i>
-                            <span className="cart-count">0</span>
+                            {cartCount > 0 && (
+                                <span className="cart-count">{cartCount}</span>
+                            )}
                         </Link>
                     </div>
                 </div>
@@ -101,10 +132,16 @@ const Navbar = () => {
                                 <i className="fas fa-bars"></i> All Categories
                             </button>
                             <div className="categories-dropdown">
-                                <Link to="/products?category=cpu">CPUs</Link>
-                                <Link to="/products?category=gpu">GPUs</Link>
-                                <Link to="/products?category=motherboard">Motherboards</Link>
-                                <Link to="/products?category=ram">RAM</Link>
+                                {categoryLinks.map(category => (
+                                    <Link 
+                                        key={category.name}
+                                        to={category.path}
+                                        className="category-link"
+                                        onClick={() => handleCategoryClick(category.path)}
+                                    >
+                                        {category.name}
+                                    </Link>
+                                ))}
                             </div>
                         </div>
                         <div className="main-menu">
