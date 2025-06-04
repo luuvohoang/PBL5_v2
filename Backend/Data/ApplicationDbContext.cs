@@ -22,11 +22,8 @@ namespace Backend.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-<<<<<<< HEAD
-=======
         public DbSet<ProductItem> ProductItems { get; set; }
         public DbSet<Warranty> Warranties { get; set; }
->>>>>>> 16/05
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -136,14 +133,6 @@ namespace Backend.Data
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Order)
                 .WithMany(o => o.OrderDetails)
-<<<<<<< HEAD
-                .HasForeignKey(od => od.OrderId);
-
-            modelBuilder.Entity<OrderDetail>()
-                .HasOne(od => od.Product)
-                .WithMany()
-                .HasForeignKey(od => od.ProductId);
-=======
                 .HasForeignKey(od => od.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -196,7 +185,6 @@ namespace Backend.Data
                 .Property(w => w.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
->>>>>>> 16/05
 
             // Seed initial data
             modelBuilder.Entity<Product>().HasData(

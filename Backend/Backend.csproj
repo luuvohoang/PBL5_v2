@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-<Project Sdk="Microsoft.NET.Sdk.Web">
-=======
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
->>>>>>> 16/05
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-<<<<<<< HEAD
-=======
     <UserSecretsId>6b39b958-c0df-400b-8a76-b1ab3588b62f</UserSecretsId>
->>>>>>> 16/05
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,10 +18,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-<<<<<<< HEAD
-=======
     <PackageReference Include="SendGrid" Version="9.29.3" />
->>>>>>> 16/05
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 

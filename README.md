@@ -82,3 +82,5 @@ ALTER TABLE Products ADD Warranty INT;
 ALTER TABLE Users
 ADD ResetToken NVARCHAR(100),
     ResetTokenExpiry DATETIME;
+
+    pass sql azure MyPcParts@SQL!2024

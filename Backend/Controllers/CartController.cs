@@ -20,36 +20,6 @@ namespace Backend.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetUserCart(int userId)
         {
-<<<<<<< HEAD
-            var cartItems = await _context.CartProducts
-                .Include(cp => cp.Product)
-                    .ThenInclude(p => p.Sale)  // Include Sale information
-                .Include(cp => cp.Cart)
-                .Where(cp => cp.Cart.UserId == userId)
-                .Select(cp => new
-                {
-                    cp.CartId,
-                    cp.ProductId,
-                    cp.Product.Name,
-                    cp.Product.Price,
-                    DiscountedPrice = cp.Product.Sale != null
-                        ? cp.Product.Price * (1 - cp.Product.Sale.DiscountPercent / 100)
-                        : cp.Product.Price,
-                    cp.Product.ImageUrl,
-                    cp.Quantity,
-                    Total = cp.Product.Sale != null
-                        ? (cp.Product.Price * (1 - cp.Product.Sale.DiscountPercent / 100)) * cp.Quantity
-                        : cp.Product.Price * cp.Quantity,
-                    Sale = cp.Product.Sale != null ? new
-                    {
-                        cp.Product.Sale.DiscountPercent,
-                        cp.Product.Sale.IsActive
-                    } : null
-                })
-                .ToListAsync();
-
-            return Ok(cartItems);
-=======
             try
             {
                 var cartItems = await _context.CartProducts
@@ -84,7 +54,6 @@ namespace Backend.Controllers
             {
                 return StatusCode(500, new { message = ex.Message });
             }
->>>>>>> 16/05
         }
 
         [HttpPost("add")]
@@ -151,19 +120,6 @@ namespace Backend.Controllers
             }
         }
 
-<<<<<<< HEAD
-        [HttpPut("{cartId}/products/{productId}/quantity")]
-        public async Task<IActionResult> UpdateQuantity(int cartId, int productId, [FromBody] int quantity)
-        {
-            var cartProduct = await _context.CartProducts
-                .FirstOrDefaultAsync(cp => cp.CartId == cartId && cp.ProductId == productId);
-
-            if (cartProduct == null) return NotFound();
-
-            cartProduct.Quantity = quantity;
-            await _context.SaveChangesAsync();
-            return Ok();
-=======
         [HttpPut("{cartId}")]
         public async Task<IActionResult> UpdateQuantity(int cartId, [FromBody] UpdateCartItemDto request)
         {
@@ -221,7 +177,6 @@ namespace Backend.Controllers
                 Console.WriteLine($"Error updating quantity: {ex.Message}");
                 return StatusCode(500, new { message = ex.Message });
             }
->>>>>>> 16/05
         }
 
         [HttpDelete("{cartId}/products/{productId}")]

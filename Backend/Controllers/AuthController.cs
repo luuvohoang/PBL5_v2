@@ -6,10 +6,7 @@ using Backend.Data;
 using Backend.Models;
 using Backend.Models.DTOs;
 using Microsoft.Extensions.Logging;
-<<<<<<< HEAD
-=======
 using Backend.Services;
->>>>>>> 16/05
 
 namespace Backend.Controllers
 {
@@ -19,13 +16,6 @@ namespace Backend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<AuthController> _logger;
-<<<<<<< HEAD
-
-        public AuthController(ApplicationDbContext context, ILogger<AuthController> logger)
-        {
-            _context = context;
-            _logger = logger;
-=======
         private readonly IEmailService _emailService;
 
         public AuthController(
@@ -36,7 +26,6 @@ namespace Backend.Controllers
             _context = context;
             _logger = logger;
             _emailService = emailService;
->>>>>>> 16/05
         }
 
         [HttpPost("register")]
@@ -108,8 +97,6 @@ namespace Backend.Controllers
             }
         }
 
-<<<<<<< HEAD
-=======
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto request)
         {
@@ -174,7 +161,6 @@ namespace Backend.Controllers
             }
         }
 
->>>>>>> 16/05
         private string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
@@ -182,8 +168,6 @@ namespace Backend.Controllers
             return Convert.ToBase64String(hashedBytes);
         }
     }
-<<<<<<< HEAD
-=======
 
     public class ForgotPasswordDto
     {
@@ -195,5 +179,4 @@ namespace Backend.Controllers
         public string Token { get; set; }
         public string NewPassword { get; set; }
     }
->>>>>>> 16/05
 }

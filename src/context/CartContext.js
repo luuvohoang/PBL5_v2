@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://a50d-2405-4802-b55f-5dd0-1853-b396-5436-830e.ngrok-free.app/api';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
@@ -19,7 +19,11 @@ export const CartProvider = ({ children }) => {
     const fetchCart = useCallback(async () => {
         if (!userId) return;
         try {
-            const response = await axios.get(`${API_URL}/cart/${userId}`);
+            const response = await axios.get(`${API_URL}/cart/${userId}`, {
+                headers: {
+                    'ngrok-skip-browser-warning': 'true'
+                }
+            });
             setCart(response.data);
         } catch (error) {
             console.error('Failed to fetch cart:', error);
@@ -81,18 +85,18 @@ export const CartProvider = ({ children }) => {
         } catch (error) {
             console.error('Failed to remove from cart:', error);
             throw error;
-        }   
+        }
     };
 
     const updateQuantity = async (cartId, productId, quantity) => {
         try {
             console.log('Updating quantity:', { cartId, productId, quantity });
-            
+
             // Validate quantity
             if (quantity < 1) {
                 throw new Error('Quantity cannot be less than 1');
             }
-            
+
             // Convert quantity to number and send as JSON
             const response = await axios.put(
                 `${API_URL}/cart/${cartId}/products/${productId}/quantity`,
@@ -103,13 +107,13 @@ export const CartProvider = ({ children }) => {
                     }
                 }
             );
-            
+
             if (response.data) {
                 console.log('Update successful:', response.data);
                 await fetchCart(); // Refresh cart after successful update
                 return response.data;
             }
-            
+
             throw new Error('Failed to update quantity');
         } catch (error) {
             console.error('Update quantity error:', error);

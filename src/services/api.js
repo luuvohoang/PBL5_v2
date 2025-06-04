@@ -6,6 +6,7 @@ axios.interceptors.request.use(
         if (user?.role) {
             config.headers['UserRole'] = user.role;
         }
+        config.headers['ngrok-skip-browser-warning'] = 'true';
         return config;
     },
     (error) => {
@@ -13,7 +14,7 @@ axios.interceptors.request.use(
     }
 );
 
-const API_URL = 'http://localhost:5000/api';  // Make sure this matches your backend URL
+const API_URL = 'https://a50d-2405-4802-b55f-5dd0-1853-b396-5436-830e.ngrok-free.app/api';  // Make sure this matches your backend URL
 
 export const getProducts = async (params = {}) => {
     try {
@@ -50,7 +51,7 @@ export const getProductById = async (id) => {
         console.log('Fetching product with ID:', id);
         const response = await axios.get(`${API_URL}/products/${id}`);
         const productData = response.data;
-        
+
         if (!productData) {
             throw new Error('Product not found');
         }
@@ -462,12 +463,12 @@ export const searchProducts = async (searchTerm) => {
         // Get all products
         const response = await axios.get(`${API_URL}/products`);
         const products = response.data?.items || [];
-        
+
         // Convert search term to lowercase for case-insensitive comparison
         const term = searchTerm.toLowerCase().trim();
-        
+
         // Filter products based on Name, Description, and Category
-        const filteredProducts = products.filter(product => 
+        const filteredProducts = products.filter(product =>
             product.name?.toLowerCase().includes(term) ||
             product.description?.toLowerCase().includes(term) ||
             product.category?.toLowerCase().includes(term)

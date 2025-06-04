@@ -172,13 +172,10 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("District")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
->>>>>>> 16/05
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
@@ -190,19 +187,14 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("Province")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
->>>>>>> 16/05
                     b.Property<string>("ShippingAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD
-=======
                     b.Property<decimal>("ShippingFee")
                         .HasColumnType("decimal(18,2)");
 
@@ -210,21 +202,10 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
->>>>>>> 16/05
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-=======
                     b.Property<string>("StatusNote")
                         .HasColumnType("nvarchar(max)");
 
@@ -251,7 +232,6 @@ namespace Backend.Migrations
 
                     b.HasIndex("UpdatedById");
 
->>>>>>> 16/05
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
@@ -265,35 +245,16 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-<<<<<<< HEAD
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-=======
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("OrderId")
->>>>>>> 16/05
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Subtotal")
-<<<<<<< HEAD
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-=======
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("UnitPrice")
@@ -304,7 +265,6 @@ namespace Backend.Migrations
                     b.HasIndex("ItemId");
 
                     b.HasIndex("OrderId");
->>>>>>> 16/05
 
                     b.ToTable("OrderDetails");
                 });
@@ -359,12 +319,9 @@ namespace Backend.Migrations
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("int");
 
-<<<<<<< HEAD
-=======
                     b.Property<int>("WarrantyDuration")
                         .HasColumnType("int");
 
->>>>>>> 16/05
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
@@ -390,12 +347,8 @@ namespace Backend.Migrations
                             Price = 449.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-<<<<<<< HEAD
-                            StockQuantity = 10
-=======
                             StockQuantity = 10,
                             WarrantyDuration = 0
->>>>>>> 16/05
                         },
                         new
                         {
@@ -408,12 +361,8 @@ namespace Backend.Migrations
                             Price = 699.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-<<<<<<< HEAD
-                            StockQuantity = 5
-=======
                             StockQuantity = 5,
                             WarrantyDuration = 0
->>>>>>> 16/05
                         },
                         new
                         {
@@ -426,12 +375,8 @@ namespace Backend.Migrations
                             Price = 189.99m,
                             SoldQuantity = 0,
                             Status = "Available",
-<<<<<<< HEAD
-                            StockQuantity = 15
-=======
                             StockQuantity = 15,
                             WarrantyDuration = 0
->>>>>>> 16/05
                         });
                 });
 
@@ -450,8 +395,6 @@ namespace Backend.Migrations
                     b.ToTable("ProductCategories");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("Backend.Models.ProductItem", b =>
                 {
                     b.Property<int>("ItemId")
@@ -489,7 +432,6 @@ namespace Backend.Migrations
                     b.ToTable("ProductItems");
                 });
 
->>>>>>> 16/05
             modelBuilder.Entity("Backend.Models.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -565,15 +507,12 @@ namespace Backend.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD
-=======
                     b.Property<string>("ResetToken")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ResetTokenExpiry")
                         .HasColumnType("datetime2");
 
->>>>>>> 16/05
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -583,8 +522,6 @@ namespace Backend.Migrations
                     b.ToTable("Users");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("Backend.Models.Warranty", b =>
                 {
                     b.Property<int>("WarrantyId")
@@ -619,7 +556,6 @@ namespace Backend.Migrations
                     b.ToTable("Warranties");
                 });
 
->>>>>>> 16/05
             modelBuilder.Entity("Backend.Models.Cart", b =>
                 {
                     b.HasOne("Backend.Models.User", "User")
@@ -690,59 +626,38 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Order", b =>
                 {
-<<<<<<< HEAD
-=======
                     b.HasOne("Backend.Models.Employee", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
->>>>>>> 16/05
                     b.HasOne("Backend.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-<<<<<<< HEAD
-=======
                     b.Navigation("UpdatedBy");
 
->>>>>>> 16/05
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Backend.Models.OrderDetail", b =>
                 {
-<<<<<<< HEAD
-=======
                     b.HasOne("Backend.Models.ProductItem", "ProductItem")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
->>>>>>> 16/05
                     b.HasOne("Backend.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-<<<<<<< HEAD
-                    b.HasOne("Backend.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-=======
                     b.Navigation("Order");
 
                     b.Navigation("ProductItem");
->>>>>>> 16/05
                 });
 
             modelBuilder.Entity("Backend.Models.Product", b =>
@@ -786,8 +701,6 @@ namespace Backend.Migrations
                     b.Navigation("Product");
                 });
 
-<<<<<<< HEAD
-=======
             modelBuilder.Entity("Backend.Models.ProductItem", b =>
                 {
                     b.HasOne("Backend.Models.Product", "Product")
@@ -810,7 +723,6 @@ namespace Backend.Migrations
                     b.Navigation("ProductItem");
                 });
 
->>>>>>> 16/05
             modelBuilder.Entity("Backend.Models.Cart", b =>
                 {
                     b.Navigation("CartProducts");
@@ -831,8 +743,6 @@ namespace Backend.Migrations
                     b.Navigation("CartProducts");
 
                     b.Navigation("ProductCategories");
-<<<<<<< HEAD
-=======
 
                     b.Navigation("ProductItems");
                 });
@@ -840,7 +750,6 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.ProductItem", b =>
                 {
                     b.Navigation("Warranties");
->>>>>>> 16/05
                 });
 
             modelBuilder.Entity("Backend.Models.Role", b =>

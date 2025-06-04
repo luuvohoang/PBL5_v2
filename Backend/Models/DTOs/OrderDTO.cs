@@ -6,24 +6,16 @@ namespace Backend.Models.DTOs
         public string ShippingAddress { get; set; }
         public string PhoneNumber { get; set; }
         public string PaymentMethod { get; set; }
-<<<<<<< HEAD
-=======
         public string Province { get; set; }
         public string District { get; set; }
         public string Ward { get; set; }
         public string ShippingMethod { get; set; }
         public decimal ShippingFee { get; set; }
->>>>>>> 16/05
         public List<OrderDetailDTO> OrderDetails { get; set; }
     }
 
     public class OrderDetailDTO
     {
-<<<<<<< HEAD
-        public int ProductId { get; set; }
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-=======
         public int ItemId { get; set; }
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
@@ -38,6 +30,5 @@ namespace Backend.Models.DTOs
         public decimal UnitPrice { get; set; }
         public decimal Subtotal { get; set; }
         public int Quantity { get; set; }
->>>>>>> 16/05
     }
 }

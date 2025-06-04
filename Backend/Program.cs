@@ -2,11 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Data;
 using Microsoft.OpenApi.Models;
 using Backend.Hubs;
-<<<<<<< HEAD
-=======
 using Backend.Services;
 using Backend.Settings;
->>>>>>> 16/05
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,8 +63,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-<<<<<<< HEAD
-=======
 // Add email configuration
 builder.Services.Configure<EmailSettings>(options =>
 {
@@ -78,7 +73,6 @@ builder.Services.Configure<EmailSettings>(options =>
     options.DisplayName = builder.Configuration["EmailSettings:DisplayName"];
 });
 
->>>>>>> 16/05
 // Add DB Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -104,10 +98,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
-<<<<<<< HEAD
-=======
 builder.Services.AddScoped<IEmailService, EmailService>();
->>>>>>> 16/05
 
 var app = builder.Build();
 

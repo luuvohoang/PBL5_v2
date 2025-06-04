@@ -233,11 +233,11 @@
     background-size: 1em;
 }
 
-.sort-select:focus {
+/* .sort-select:focus {
     outline: none;
     border-color: #93c5fd;
     ring: 2px solid #93c5fd;
-}
+} */
 
 .error-message {
     text-align: center;
