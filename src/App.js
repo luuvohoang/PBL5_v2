@@ -24,6 +24,8 @@ import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 import ResetPassword from './pages/ResetPassword';
 import ProductItemManagement from './pages/ProductItemManagement';
+import Policies from './pages/Policies';
+import Footer from './components/Footer';
 import './styles/common-animations.css';
 import './styles/auth.css';
 
@@ -31,104 +33,108 @@ function App() {
     return (
         <CartProvider>
             <Router>
-                <div>
+                <div className="app-container">
                     <Navbar />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/products" element={<Products />} />
-                        <Route path="/products/search" element={<Products />} />
-                        <Route path="/cart" element={<Cart />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/product/:id" element={<ProductDetail />} />
-                        <Route path="/products/:id" element={<ProductDetail />} />
-                        <Route
-                            path="/employees"
-                            element={
-                                <PrivateRoute
-                                    element={<Employees />}
-                                    allowedRoles={['Admin', 'Manager']}
-                                />
-                            }
-                        />
-                        <Route
-                            path="/customers"
-                            element={
-                                <PrivateRoute
-                                    element={<Customers />}
-                                    allowedRoles={['Admin', 'Manager', 'Staff']}
-                                />
-                            }
-                        />
-                        <Route
-                            path="/chat"
-                            element={
-                                <PrivateRoute
-                                    element={<Chat />}
-                                    allowedRoles={['Admin', 'Manager', 'Staff']}
-                                />
-                            }
-                        />
-                        <Route
-                            path="/customer-chat"
-                            element={
-                                <PrivateRoute
-                                    element={<CustomerChat />}
-                                    allowedRoles={['Customer']}
-                                />
-                            }
-                        />
-                        <Route path="/products/edit/:id" element={<EditProduct />} />
-                        <Route
-                            path="/categories"
-                            element={
-                                <PrivateRoute
-                                    element={<Categories />}
-                                    allowedRoles={['Admin', 'Manager']}
-                                />
-                            }
-                        />
-                        <Route
-                            path="/ProductManagement"
-                            element={
-                                <PrivateRoute
-                                    element={<ProductManagement />}
-                                    allowedRoles={['Admin', 'Manager', 'Staff']}
-                                />
-                            }
-                        />
-                        <Route path="/checkout" element={<Checkout />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/orders" element={<Orders />} />
-                        <Route
-                            path="/admin/orders"
-                            element={
-                                <PrivateRoute
-                                    element={
-                                        <ErrorBoundary>
-                                            <AdminOrders />
-                                        </ErrorBoundary>
-                                    }
-                                    allowedRoles={['Admin', 'Manager', 'Staff']}
-                                />
-                            }
-                        />
-                        <Route
-                            path="/dashboard"
-                            element={
-                                <PrivateRoute
-                                    element={
-                                        <ErrorBoundary>
-                                            <Dashboard />
-                                        </ErrorBoundary>
-                                    }
-                                    allowedRoles={['Admin', 'Manager', 'Staff']}
-                                />
-                            }
-                        />
-                        <Route path="/reset-password" element={<ResetPassword />} />
-                        <Route path="/products/:id/items" element={<ProductItemManagement />} />
-                    </Routes>
+                    <main className="main-content">
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/products" element={<Products />} />
+                            <Route path="/products/search" element={<Products />} />
+                            <Route path="/cart" element={<Cart />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/product/:id" element={<ProductDetail />} />
+                            <Route path="/products/:id" element={<ProductDetail />} />
+                            <Route
+                                path="/employees"
+                                element={
+                                    <PrivateRoute
+                                        element={<Employees />}
+                                        allowedRoles={['Admin', 'Manager']}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/customers"
+                                element={
+                                    <PrivateRoute
+                                        element={<Customers />}
+                                        allowedRoles={['Admin', 'Manager', 'Staff']}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/chat"
+                                element={
+                                    <PrivateRoute
+                                        element={<Chat />}
+                                        allowedRoles={['Admin', 'Manager', 'Staff']}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/customer-chat"
+                                element={
+                                    <PrivateRoute
+                                        element={<CustomerChat />}
+                                        allowedRoles={['Customer']}
+                                    />
+                                }
+                            />
+                            <Route path="/products/edit/:id" element={<EditProduct />} />
+                            <Route
+                                path="/categories"
+                                element={
+                                    <PrivateRoute
+                                        element={<Categories />}
+                                        allowedRoles={['Admin', 'Manager']}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/ProductManagement"
+                                element={
+                                    <PrivateRoute
+                                        element={<ProductManagement />}
+                                        allowedRoles={['Admin', 'Manager', 'Staff']}
+                                    />
+                                }
+                            />
+                            <Route path="/checkout" element={<Checkout />} />
+                            <Route path="/profile" element={<Profile />} />
+                            <Route path="/orders" element={<Orders />} />
+                            <Route
+                                path="/admin/orders"
+                                element={
+                                    <PrivateRoute
+                                        element={
+                                            <ErrorBoundary>
+                                                <AdminOrders />
+                                            </ErrorBoundary>
+                                        }
+                                        allowedRoles={['Admin', 'Manager', 'Staff']}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/dashboard"
+                                element={
+                                    <PrivateRoute
+                                        element={
+                                            <ErrorBoundary>
+                                                <Dashboard />
+                                            </ErrorBoundary>
+                                        }
+                                        allowedRoles={['Admin', 'Manager', 'Staff']}
+                                    />
+                                }
+                            />
+                            <Route path="/reset-password" element={<ResetPassword />} />
+                            <Route path="/products/:id/items" element={<ProductItemManagement />} />
+                            <Route path="/policies/:type" element={<Policies />} />
+                        </Routes>
+                    </main>
+                    <Footer />
                 </div>
             </Router>
         </CartProvider>

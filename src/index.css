@@ -111,29 +111,15 @@ code {
     box-shadow: var(--card-shadow);
 }
 
-/* Contact Bar */
-.contact-bar {
-    background-color: #1a1a1a;
-    color: #ffffff;
-    padding: 8px 0;
-    font-size: 0.85rem;
-}
-
-.contact-info {
+/* App Container */
+.app-container {
+    min-height: 100vh;
     display: flex;
-    justify-content: flex-end;
-    gap: 2rem;
+    flex-direction: column;
 }
 
-.contact-info span {
-    display: flex;
-    align-items: center;
-    opacity: 0.9;
-}
-
-.contact-info span i {
-    margin-right: 0.5rem;
-    color: var(--primary-color);
+.main-content {
+    flex: 1;
 }
 
 /* Navbar Wrapper */
@@ -168,6 +154,31 @@ code {
 }
 
 .logo:hover {
+    color: var(--primary-color);
+}
+
+/* Contact Bar */
+.contact-bar {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 8px 0;
+    font-size: 0.85rem;
+}
+
+.contact-info {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+}
+
+.contact-info span {
+    display: flex;
+    align-items: center;
+    opacity: 0.9;
+}
+
+.contact-info span i {
+    margin-right: 0.5rem;
     color: var(--primary-color);
 }
 
@@ -611,12 +622,6 @@ code {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-    .contact-info {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
     .navbar-main .container {
         flex-direction: column;
         height: auto;

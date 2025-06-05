@@ -367,6 +367,28 @@
     margin: 0;
 }
 
+.search-results-grouped {
+    padding: 20px;
+}
+
+.search-results-grouped h2 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.category-group {
+    margin-bottom: 40px;
+}
+
+.category-group h3 {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5e7eb;
+    color: #1f2937;
+    font-size: 1.2rem;
+}
+
 @media (max-width: 1200px) {
     .products-layout {
         grid-template-columns: 250px 1fr;

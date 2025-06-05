@@ -459,29 +459,34 @@ export const createOrder = async (orderData) => {
 
 export const searchProducts = async (searchTerm) => {
     try {
-        // Get all products
-        const response = await axios.get(`${API_URL}/products`);
+        // Get products with search parameters
+        const response = await axios.get(`${API_URL}/products`, {
+            params: {
+                pageSize: 1000 // Lấy tất cả sản phẩm
+            }
+        });
         const products = response.data?.items || [];
         
         // Convert search term to lowercase for case-insensitive comparison
         const term = searchTerm.toLowerCase().trim();
         
-        // Filter products based on Name, Description, and Category
+        // Filter products based only on Name and Category
         const filteredProducts = products.filter(product => 
             product.name?.toLowerCase().includes(term) ||
-            product.description?.toLowerCase().includes(term) ||
             product.category?.toLowerCase().includes(term)
         );
 
         return {
             items: filteredProducts,
-            totalPages: Math.ceil(filteredProducts.length / 10)
+            totalPages: Math.ceil(filteredProducts.length / 10),
+            totalResults: filteredProducts.length
         };
     } catch (error) {
         console.error('Error searching products:', error);
         return {
             items: [],
-            totalPages: 0
+            totalPages: 0,
+            totalResults: 0
         };
     }
 };

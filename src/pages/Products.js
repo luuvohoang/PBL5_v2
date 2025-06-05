@@ -17,6 +17,7 @@ const Products = () => {
     const [sortType, setSortType] = useState('default');
     const [selectedManufacturer, setSelectedManufacturer] = useState('');
     const [manufacturers, setManufacturers] = useState([]);
+    const [groupedProducts, setGroupedProducts] = useState({});
     const itemsPerPage = 10;
     const searchTerm = searchQuery || '';
 
@@ -41,6 +42,7 @@ const Products = () => {
 
             if (searchQuery) {
                 data = await searchProducts(searchQuery);
+                setGroupedProducts(data.groupedItems || {});
             } else {
                 data = await getProducts({ 
                     category: category, // Use category from URL params
@@ -48,6 +50,7 @@ const Products = () => {
                     pageSize: itemsPerPage,
                     sortType: sortType
                 });
+                setGroupedProducts({});
             }
 
             if (!data?.items?.length) {
@@ -167,6 +170,21 @@ const Products = () => {
 
             {error ? (
                 <div className="error-message">{error}</div>
+            ) : searchQuery && Object.keys(groupedProducts).length > 0 ? (
+                // Hiển thị kết quả theo nhóm khi có tìm kiếm
+                <div className="search-results-grouped">
+                    <h2>Kết quả tìm kiếm cho "{searchQuery}"</h2>
+                    {Object.entries(groupedProducts).map(([category, products]) => (
+                        <div key={category} className="category-group">
+                            <h3>{category} ({products.length})</h3>
+                            <div className="products-grid">
+                                {products.map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             ) : sortedProducts.length === 0 ? (
                 <div className="no-results">
                     {category 

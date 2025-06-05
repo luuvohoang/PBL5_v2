@@ -1,0 +1,135 @@
+.policy-container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 30px;
+}
+
+.policy-container h1 {
+    color: #1a1a1a;
+    margin-bottom: 40px;
+    text-align: center;
+    font-size: 2.8rem;
+    font-weight: 700;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+.policy-container h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.policy-content {
+    background: #fff;
+    padding: 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    line-height: 1.8;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.policy-content h2 {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin: 0 0 30px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.policy-content h3 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin: 40px 0 20px;
+    padding: 15px 20px;
+    background: linear-gradient(to right, #f8fafc, transparent);
+    border-left: 5px solid var(--primary-color);
+    border-radius: 5px;
+}
+
+.policy-content p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.policy-content ul {
+    background: #f8fafc;
+    padding: 20px 40px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.policy-content ul li {
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    position: relative;
+    padding-left: 25px;
+}
+
+.policy-content ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.contact-section {
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 40px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Add animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .policy-container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    .policy-content {
+        padding: 25px;
+    }
+
+    .policy-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .policy-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .policy-content p,
+    .policy-content ul li {
+        font-size: 1rem;
+    }
+
+    .contact-section {
+        padding: 20px;
+    }
+}

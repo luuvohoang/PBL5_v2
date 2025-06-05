@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { getProducts, addProduct, deleteProduct } from '../services/api';
+import { getProducts, addProduct, deleteProduct, searchProducts } from '../services/api';
 import '../styles/ProductManagement.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -28,20 +28,35 @@ const ProductManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortType, setSortType] = useState('name-asc');
     const [totalPages, setTotalPages] = useState(1);
+    const [searchResults, setSearchResults] = useState([]);
+    const [allProducts, setAllProducts] = useState([]); // Thêm state mới để lưu tất cả sản phẩm
     const ITEMS_PER_PAGE = 4;
 
     const fetchProducts = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await getProducts({
-                category: currentCategory,
-                page: currentPage,
-                pageSize: ITEMS_PER_PAGE,
-                sortType: sortType,
-                searchTerm: searchTerm
-            });
-            setProducts(response.items || []);
-            setTotalPages(response.totalPages || 1);
+            if (searchTerm) {
+                const response = await searchProducts(searchTerm);
+                setSearchResults(response.items || []);
+                const sortedResults = sortProducts(response.items, sortType);
+                const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+                const endIndex = startIndex + ITEMS_PER_PAGE;
+                setProducts(sortedResults.slice(startIndex, endIndex));
+                setTotalPages(Math.ceil(response.items.length / ITEMS_PER_PAGE));
+            } else {
+                const response = await getProducts({
+                    category: currentCategory,
+                    pageSize: 1000
+                });
+                const allItems = response.items || [];
+                setAllProducts(allItems);
+
+                const sortedItems = sortProducts(allItems, sortType);
+                const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+                const endIndex = startIndex + ITEMS_PER_PAGE;
+                setProducts(sortedItems.slice(startIndex, endIndex));
+                setTotalPages(Math.ceil(sortedItems.length / ITEMS_PER_PAGE));
+            }
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
@@ -68,17 +83,17 @@ const ProductManagement = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (file.size > 5000000) { // 5MB limit
+            if (file.size > 5000000) {
                 alert('File is too large. Please choose an image under 5MB.');
                 return;
             }
 
             const reader = new FileReader();
             reader.onloadend = () => {
-                setSelectedImage(reader.result); // For preview only
+                setSelectedImage(reader.result);
                 setNewProduct(prev => ({
                     ...prev,
-                    imageFile: file // Store the actual file
+                    imageFile: file
                 }));
             };
             reader.readAsDataURL(file);
@@ -116,7 +131,6 @@ const ProductManagement = () => {
     const handleAddProduct = async (e) => {
         e.preventDefault();
 
-        // Validate serial numbers
         const validation = validateSerialNumbers(newProduct.serialNumbersText, newProduct.stockQuantity);
         if (!validation.isValid) {
             alert(validation.message);
@@ -138,7 +152,6 @@ const ProductManagement = () => {
 
             await addProduct(productData);
 
-            // Reset form and refresh list
             setNewProduct({
                 name: '',
                 price: '',
@@ -164,7 +177,7 @@ const ProductManagement = () => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
                 await deleteProduct(id);
-                fetchProducts(); // Direct call instead of handleRefresh
+                fetchProducts();
             } catch (error) {
                 console.error('Error deleting product:', error);
             }
@@ -179,17 +192,32 @@ const ProductManagement = () => {
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
             setCurrentPage(pageNumber);
+
+            const itemsToUse = searchTerm ? searchResults : allProducts;
+            const sortedItems = sortProducts(itemsToUse, sortType);
+            const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            setProducts(sortedItems.slice(startIndex, endIndex));
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
     const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
+        const term = e.target.value;
+        setSearchTerm(term);
         setCurrentPage(1);
     };
 
     const handleSortChange = (event) => {
-        setSortType(event.target.value);
+        const newSortType = event.target.value;
+        setSortType(newSortType);
+
+        const itemsToSort = searchTerm ? searchResults : allProducts;
+        const sortedItems = sortProducts(itemsToSort, newSortType);
+        const startIndex = 0;
+        const endIndex = ITEMS_PER_PAGE;
+        setProducts(sortedItems.slice(startIndex, endIndex));
         setCurrentPage(1);
     };
 
@@ -280,7 +308,6 @@ const ProductManagement = () => {
                 </button>
             </div>
 
-            {/* Category Filter */}
             <div className="category-filter">
                 <button
                     className={currentCategory === '' ? 'active' : ''}
