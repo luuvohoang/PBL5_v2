@@ -26,6 +26,7 @@ import ResetPassword from './pages/ResetPassword';
 import ProductItemManagement from './pages/ProductItemManagement';
 import Policies from './pages/Policies';
 import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 import './styles/common-animations.css';
 import './styles/auth.css';
 
@@ -134,6 +135,7 @@ function App() {
                             <Route path="/policies/:type" element={<Policies />} />
                         </Routes>
                     </main>
+                    <Chatbot />
                     <Footer />
                 </div>
             </Router>

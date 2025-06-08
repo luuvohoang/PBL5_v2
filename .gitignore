@@ -7,16 +7,26 @@ obj/
 
 # Node.js dependencies
 node_modules/
+/node_modules
+/.pnp
+.pnp.js
 
 # Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Environment variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Build outputs
 dist/
-build/
+/build
 
 # IDE settings
 .vscode/
@@ -29,6 +39,7 @@ build/
 # OS-specific files
 .DS_Store
 Thumbs.db
+.DS_Store
 
 # Ignore server.js
 server.js
@@ -45,3 +56,6 @@ appsettings.*.json
 
 # Nhưng vẫn giữ lại file mẫu
 !appsettings.example.json
+
+# testing
+/coverage
