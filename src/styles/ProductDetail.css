@@ -1,0 +1,229 @@
+.product-detail-container {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.product-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-height: 400px;
+    max-height: 600px;
+    overflow: hidden;
+    opacity: 0;
+    animation: scaleIn 0.5s ease-out 0.2s forwards;
+}
+
+.product-image img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.product-image img:hover {
+    transform: scale(1.05);
+}
+
+.product-info {
+    opacity: 0;
+    animation: slideInRight 0.5s ease-out 0.3s forwards;
+    padding: 1rem;
+}
+
+.product-description {
+    opacity: 0;
+    animation: slideUp 0.5s ease-out 0.4s forwards;
+}
+
+.similar-products {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out 0.5s forwards;
+}
+
+.product-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.product-actions button {
+    flex: 1;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.add-to-cart {
+    background-color: transparent !important;  /* đảm bảo nền trong suốt */
+    color: #007bff !important;  /* màu chữ xanh */
+    border: 3px solid #007bff;
+    font-weight: bold;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transition: color 0.8s ease;  /* chỉ transition màu chữ */
+    box-shadow: 0 2px 4px rgba(0,123,255,0.2);
+}
+
+.add-to-cart::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: #007bff;
+    transition: left 0.8s ease;
+    z-index: -1;
+}
+
+.add-to-cart:hover {
+    color: #ffffff !important;  /* đảm bảo chữ trắng khi hover */
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+
+.add-to-cart:hover::before {
+    left: 0;
+}
+
+.buy-now {
+    background-color: #007bff;
+    border: 3px solid #007bff;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.2);
+}
+
+.buy-now:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+
+.product-actions button:disabled {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.product-details-section {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.related-products {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.related-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.related-product-card img {
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.related-product-card:hover img {
+    transform: scale(1.05);
+}
+
+.gallery-image {
+    transition: transform 0.3s ease;
+}
+
+.gallery-image:hover {
+    transform: scale(1.05);
+}
+
+.product-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    color: #666;
+}
+
+.separator {
+    color: #ddd;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.quantity-label {
+    font-weight: 500;
+    min-width: 80px;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-controls button {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #007bff;
+    background: white;
+    color: #007bff;
+    font-size: 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quantity-controls button:hover:not(:disabled) {
+    background: #007bff;
+    color: white;
+}
+
+.quantity-controls button:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.quantity-controls span {
+    min-width: 40px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.stock-info {
+    color: #666;
+    font-size: 0.9rem;
+}

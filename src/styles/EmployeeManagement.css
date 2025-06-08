@@ -1,0 +1,245 @@
+.employee-management {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.employee-management h1 {
+    color: #1e40af;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5efff;
+    padding-bottom: 1rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.filters-section {
+    margin: 0 auto 2rem;
+    max-width: 1200px;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    animation: slideDown 0.3s ease-out;
+}
+
+.search-filter {
+    margin: 0 auto 2rem;
+    display: flex;
+    gap: 1rem;
+    max-width: 1200px;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+    animation: slideDown 0.3s ease-out;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.search-input-container {
+    flex: 2;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;  /* Changed padding right to 2.5rem */
+    border: 1px solid #e5efff;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%232563eb' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;  /* Changed position to right */
+    background-size: 1rem;
+}
+
+.filter-group {
+    flex: 3;
+    display: flex;
+    gap: 1rem;
+}
+
+.role-select {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.75rem;
+    border: 1px solid #e5efff;
+    border-radius: 6px;
+    color: #1e40af;
+    background: white;
+    cursor: pointer;
+}
+
+.date-range {
+    flex: 2;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.date-input {
+    padding: 0.75rem;
+    border: 1px solid #e5efff;
+    border-radius: 6px;
+    color: #1e40af;
+    background: white;
+    min-width: 130px;
+}
+
+.clear-filter {
+    padding: 0.75rem 1.5rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.clear-filter:hover {
+    background: #dc2626;
+}
+
+.date-filter {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.clear-filters {
+    height: 100%;
+    padding: 0 1.5rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.employee-list {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    overflow: auto;
+    margin: 0 auto;
+    max-width: 1200px;
+    animation: slideUp 0.4s ease-out;
+}
+
+.employee-list table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 1000px;
+    background: linear-gradient(to right, #ffffff, #f0f7ff);
+}
+
+.employee-list th {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    padding: 1.25rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #1e40af;
+}
+
+.employee-list td {
+    padding: 1.25rem;
+    border-bottom: 1px solid #e5efff;
+    transition: all 0.2s ease;
+}
+
+.employee-list tr {
+    animation: fadeIn 0.3s ease-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.employee-list tr:hover {
+    background: #f0f7ff;
+    box-shadow: inset 0 0 0 1px #2563eb20;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.edit-button, .add-button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    font-weight: 500;
+}
+
+.edit-button:hover, .add-button:hover {
+    background: #1e40af;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    transform: translateY(-2px);
+}
+
+.delete-button {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.delete-button:hover {
+    background: #b91c1c;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
