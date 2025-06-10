@@ -1,10 +1,6 @@
 # PC Parts Store
 
-<<<<<<< HEAD
-Web application for managing PC component sales.
-=======
 A web application for managing PC parts sales with an integrated AI chatbot assistant.
->>>>>>> origin/08-06
 
 ## Setup
 
@@ -37,7 +33,7 @@ npm install langchain @langchain/openai
 2. Configure environment variables:
 Create a `.env` file in the root directory and add:
 ```
-OPENAI_API_KEY=your_openai_api_key
+REACT_APP_OPENAI_API_KEY=your_openai_api_key
 ```
 
 ## Features
@@ -251,3 +247,5 @@ UC16 ..> UC22 : <<extend>>
 
 
 @enduml
+
+ngrok http https://localhost:8082

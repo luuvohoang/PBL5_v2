@@ -127,11 +127,28 @@ namespace Backend.Controllers
             });
         }
 
+        private async Task UpdateWarrantyStatusesAsync()
+        {
+            var expiredWarranties = await _context.Warranties
+                .Where(w => w.Status == "active" && w.StartDate.AddMonths(w.Duration) <= DateTime.Now.Date)
+                .ToListAsync();
+
+            foreach (var warranty in expiredWarranties)
+            {
+                warranty.Status = "expired";
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetUserOrders(int userId)
         {
             try
             {
+                // Cập nhật trạng thái bảo hành trước khi lấy dữ liệu
+                await UpdateWarrantyStatusesAsync();
+
                 var user = await _context.Users.FindAsync(userId);
                 if (user == null)
                     return NotFound($"User with ID {userId} not found");
@@ -228,6 +245,9 @@ namespace Backend.Controllers
         {
             try
             {
+                // Cập nhật trạng thái bảo hành trước khi lấy dữ liệu
+                await UpdateWarrantyStatusesAsync();
+
                 var orders = await _context.Orders
                     .Include(o => o.User)
                     .Include(o => o.OrderDetails)

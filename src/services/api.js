@@ -6,7 +6,7 @@ axios.interceptors.request.use(
         if (user?.role) {
             config.headers['UserRole'] = user.role;
         }
-        // config.headers['ngrok-skip-browser-warning'] = 'true';
+        config.headers['ngrok-skip-browser-warning'] = 'true';
         return config;
     },
     (error) => {
@@ -14,7 +14,7 @@ axios.interceptors.request.use(
     }
 );
 
-const API_URL = 'http://localhost:5000/api';  // Make sure this matches your backend URL
+const API_URL = 'https://0d8f-42-117-67-217.ngrok-free.app/api';  // Make sure this matches your backend URL
 
 export const getProducts = async (params = {}) => {
     try {

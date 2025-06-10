@@ -133,6 +133,7 @@ function App() {
                             />
                             <Route path="/reset-password" element={<ResetPassword />} />
                             <Route path="/products/:id/items" element={<ProductItemManagement />} />
+                            <Route path="/policies/:type" element={<Policies />} />
                             <Route
                                 path="/exchange-management"
                                 element={
@@ -142,7 +143,7 @@ function App() {
                                     />
                                 }
                             />
-                    </Routes>
+                        </Routes>
                     </main>
                     <Chatbot />
                     <Footer />

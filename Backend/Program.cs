@@ -90,7 +90,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", builder =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        builder.WithOrigins("https://chic-swan-f02f6e.netlify.app")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();  // Add this line
