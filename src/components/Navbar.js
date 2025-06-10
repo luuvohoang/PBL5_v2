@@ -10,6 +10,18 @@ const Navbar = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const { cartCount } = useCart();
 
+    const categoryLinks = [
+        { name: 'CPUs', path: '/products?category=CPU' },
+        { name: 'GPUs', path: '/products?category=GPU' },
+        { name: 'Motherboards', path: '/products?category=Motherboard' },
+        { name: 'RAM', path: '/products?category=RAM' }
+    ];
+
+    const handleCategoryClick = (categoryPath) => {
+        console.log('Navigating to:', categoryPath);
+        navigate(categoryPath);
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -28,6 +40,7 @@ const Navbar = () => {
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
                         <Link to="/admin/orders">Order Management</Link>
+                        <Link to="/exchange-management">Exchange Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );
@@ -120,10 +133,16 @@ const Navbar = () => {
                                 <i className="fas fa-bars"></i> All Categories
                             </button>
                             <div className="categories-dropdown">
-                                <Link to="/products?category=cpu">CPUs</Link>
-                                <Link to="/products?category=gpu">GPUs</Link>
-                                <Link to="/products?category=motherboard">Motherboards</Link>
-                                <Link to="/products?category=ram">RAM</Link>
+                                {categoryLinks.map(category => (
+                                    <Link 
+                                        key={category.name}
+                                        to={category.path}
+                                        className="category-link"
+                                        onClick={() => handleCategoryClick(category.path)}
+                                    >
+                                        {category.name}
+                                    </Link>
+                                ))}
                             </div>
                         </div>
                         <div className="main-menu">

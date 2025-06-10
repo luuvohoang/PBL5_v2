@@ -131,12 +131,17 @@ const Checkout = () => {
             const selectedDistrictName = districts.find(d => d.DistrictID.toString() === selectedDistrict)?.DistrictName;
             const selectedWardName = wards.find(w => w.WardCode === selectedWard)?.WardName;
 
-            const shippingAddress = `${formData.shippingAddress}, ${selectedWardName}, ${selectedDistrictName}, ${selectedProvinceName}`;
+            // Chuẩn bị order details với productId thay vì itemId
+            const orderDetails = cart.map(item => ({
+                productId: item.productId,
+                productName: item.name,
+                quantity: item.quantity,
+                unitPrice: item.sale
+                    ? item.price * (1 - item.sale.discountPercent / 100)
+                    : item.price
+            }));
 
-            const subtotal = cart.reduce((sum, item) => {
-                const itemPrice = item.sale ? item.price * (1 - item.sale.discountPercent / 100) : item.price;
-                return sum + itemPrice * item.quantity;
-            }, 0);
+            const shippingAddress = `${formData.shippingAddress}, ${selectedWardName}, ${selectedDistrictName}, ${selectedProvinceName}`;
 
             const orderData = {
                 userId: user.id,
@@ -147,14 +152,8 @@ const Checkout = () => {
                 district: selectedDistrictName,
                 ward: selectedWardName,
                 shippingMethod: shippingMethod === '1' ? 'Express' : shippingMethod === '2' ? 'Standard' : 'Saving',
-                shippingFee: shippingFee, // Already in USD
-                orderDetails: cart.map(item => ({
-                    productId: item.productId,
-                    quantity: item.quantity,
-                    unitPrice: item.sale
-                        ? item.price * (1 - item.sale.discountPercent / 100)
-                        : item.price
-                }))
+                shippingFee: shippingFee,
+                orderDetails: orderDetails
             };
 
             const result = await createOrder(orderData);
@@ -164,7 +163,7 @@ const Checkout = () => {
             }
         } catch (error) {
             console.error('Error placing order:', error);
-            alert(error.response?.data?.message || 'Failed to place order. Please try again.');
+            alert(error.message || 'Failed to place order. Please try again.');
         }
     };
 
@@ -192,11 +191,18 @@ const Checkout = () => {
                     <h2>Order Summary</h2>
                     {cart.map(item => (
                         <div key={item.productId} className="order-item">
-                            <img src={item.imageUrl} alt={item.name} />
+                            <img 
+                                src={`./assets/${item.imageUrl}`} 
+                                alt={item.name}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = './assets/images/default.jpg';
+                                }}
+                            />
                             <div className="item-details">
                                 <h3>{item.name}</h3>
                                 <p>Quantity: {item.quantity}</p>
-                                <p>Price: ${(item.sale
+                                <p className="price">Price: ${(item.sale
                                     ? item.price * (1 - item.sale.discountPercent / 100)
                                     : item.price).toFixed(2)}</p>
                             </div>
@@ -209,7 +215,7 @@ const Checkout = () => {
 
                 <form onSubmit={handleSubmit} className="checkout-form">
                     <h2>Shipping Information</h2>
-                    
+
                     <div className="form-group">
                         <label>Province/City</label>
                         <select value={selectedProvince} onChange={handleProvinceChange} required>
@@ -297,6 +303,18 @@ const Checkout = () => {
                             <option value="bank">Bank Transfer</option>
                         </select>
                     </div>
+
+                    {formData.paymentMethod === 'bank' && (
+                        <div className="bank-transfer-info">
+                            <h3>Bank Transfer Information</h3>
+                            <p>Quí khách chuyển khoản qua ngân hàng với nội dung: Số điện thoại + Họ Tên</p>
+                            <div className="bank-details">
+                                <p><strong>STK:</strong> 0337773018</p>
+                                <p><strong>Ngân hàng:</strong> MBBANK</p>
+                                <p><strong>Tên:</strong> PHAN THANH KIET</p>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="order-total">
                         <h3>Total (including shipping): ${total.toFixed(2)}</h3>

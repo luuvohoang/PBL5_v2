@@ -10,5 +10,7 @@ namespace Backend.Models
         public virtual Employee? Employee { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
+        public string? ResetToken { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
     }
 }

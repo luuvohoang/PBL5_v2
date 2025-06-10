@@ -18,6 +18,10 @@ namespace Backend.Models
         public decimal SubTotal { get; set; }
         public User User { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
+        public string? StatusNote { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public int? UpdatedById { get; set; }
+        public virtual Employee? UpdatedBy { get; set; }
 
         public Order()
         {

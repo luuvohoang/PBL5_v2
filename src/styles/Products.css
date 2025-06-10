@@ -233,11 +233,11 @@
     background-size: 1em;
 }
 
-.sort-select:focus {
+/* .sort-select:focus {
     outline: none;
     border-color: #93c5fd;
     ring: 2px solid #93c5fd;
-}
+} */
 
 .error-message {
     text-align: center;
@@ -272,6 +272,99 @@
 .product-card:hover {
     transform: translateY(-5px) scale(1.02);
     transition: transform 0.3s ease;
+}
+
+.category-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.category-btn {
+    padding: 0.5rem 1.5rem;
+    border: 2px solid #007bff;
+    background: white;
+    color: #007bff;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.category-btn:hover, .category-btn.active {
+    background: #007bff;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.filters-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.manufacturer-filter select,
+.sort-select {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: white;
+    color: #4b5563;
+    font-size: 0.95rem;
+    cursor: pointer;
+    min-width: 160px;
+}
+
+.active-filters {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: #e5efff;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #1e40af;
+}
+
+.filter-tag button {
+    background: none;
+    border: none;
+    color: #4b5563;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.filter-tag button:hover {
+    color: #dc2626;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.search-results {
+    font-size: 0.9rem;
+    color: #666;
+    padding: 4px 0;
+}
+
+.search-results p {
+    margin: 0;
 }
 
 @media (max-width: 1200px) {
@@ -314,5 +407,21 @@
 
     .product-card {
         animation-duration: 0.3s;
+    }
+
+    .filters-container {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .manufacturer-filter select,
+    .sort-select {
+        width: 100%;
+    }
+
+    .header-content {
+        width: 100%;
+        margin-bottom: 1rem;
     }
 }

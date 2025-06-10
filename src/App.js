@@ -22,7 +22,11 @@ import Orders from './pages/Orders';
 import AdminOrders from './pages/AdminOrders';
 import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
+import ResetPassword from './pages/ResetPassword';
+import ProductItemManagement from './pages/ProductItemManagement';
 import './styles/common-animations.css';
+import './styles/auth.css';
+import ExchangeManagement from './pages/ExchangeManagement';
 
 function App() {
     return (
@@ -38,6 +42,7 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/product/:id" element={<ProductDetail />} />
+                        <Route path="/products/:id" element={<ProductDetail />} />
                         <Route
                             path="/employees"
                             element={
@@ -119,6 +124,17 @@ function App() {
                                         </ErrorBoundary>
                                     }
                                     allowedRoles={['Admin', 'Manager', 'Staff']}
+                                />
+                            }
+                        />
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route path="/products/:id/items" element={<ProductItemManagement />} />
+                        <Route
+                            path="/exchange-management"
+                            element={
+                                <PrivateRoute
+                                    element={<ExchangeManagement />}
+                                    allowedRoles={['Admin', 'Manager']}
                                 />
                             }
                         />

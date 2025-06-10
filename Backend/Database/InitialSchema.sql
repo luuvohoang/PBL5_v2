@@ -186,6 +186,62 @@ CREATE TABLE Employees (
 );
 GO
 
+-- Drop the ExchangeRequests table if it exists
+IF OBJECT_ID('ExchangeRequests', 'U') IS NOT NULL
+    DROP TABLE ExchangeRequests;
+GO
+
+-- Thêm bảng và dữ liệu mới theo cách tối ưu
+-- Create Exchange Status table
+CREATE TABLE ExchangeStatus (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(50) NOT NULL
+);
+
+-- Insert exchange statuses
+INSERT INTO ExchangeStatus (Name) VALUES 
+('Pending'),
+('Approved'),
+('Rejected'),
+('Completed');
+
+-- Create Product Exchange table
+CREATE TABLE ProductExchanges (
+    ExchangeId INT PRIMARY KEY IDENTITY(1,1),
+    OrderDetailId INT NOT NULL,
+    OldItemId INT NOT NULL,
+    NewItemId INT,
+    RequestDate DATETIME DEFAULT GETDATE(),
+    StatusId INT NOT NULL,
+    ReasonForExchange NVARCHAR(500) NOT NULL,
+    ProcessedById INT,
+    ProcessedDate DATETIME,
+    Notes NVARCHAR(1000),
+    CONSTRAINT FK_Exchange_OrderDetail FOREIGN KEY (OrderDetailId) 
+        REFERENCES OrderDetails(Id),
+    CONSTRAINT FK_Exchange_OldItem FOREIGN KEY (OldItemId) 
+        REFERENCES ProductItems(ItemId),
+    CONSTRAINT FK_Exchange_NewItem FOREIGN KEY (NewItemId) 
+        REFERENCES ProductItems(ItemId),
+    CONSTRAINT FK_Exchange_Status FOREIGN KEY (StatusId) 
+        REFERENCES ExchangeStatus(Id),
+    CONSTRAINT FK_Exchange_Employee FOREIGN KEY (ProcessedById) 
+        REFERENCES Employees(Id)
+);
+
+-- Add index for better query performance
+CREATE INDEX IX_ProductExchanges_Status ON ProductExchanges(StatusId);
+CREATE INDEX IX_ProductExchanges_RequestDate ON ProductExchanges(RequestDate);
+
+-- Update ProductItems table status
+ALTER TABLE ProductItems 
+DROP CONSTRAINT IF EXISTS CHK_ProductItems_Status;
+
+ALTER TABLE ProductItems
+ADD CONSTRAINT CHK_ProductItems_Status 
+CHECK (Status IN ('in_stock', 'sold', 'pending_exchange', 'under_warranty', 'returned', 'exchanged'));
+GO
+
 -- Insert sample roles
 INSERT INTO Roles (Name, Description) VALUES
 ('Admin', 'Full system access'),

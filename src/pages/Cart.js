@@ -19,9 +19,27 @@ const Cart = () => {
         }
     };
 
-    const handleQuantityChange = (cartId, productId, newQuantity) => {
-        if (newQuantity >= 1) {
-            updateQuantity(cartId, productId, newQuantity);
+    const handleQuantityChange = async (cartId, productId, newQuantity) => {
+        try {
+            // Kiểm tra số lượng tối thiểu
+            if (newQuantity < 1) {
+                return;
+            }
+            
+            // Tìm sản phẩm trong giỏ hàng
+            const cartItem = cart.find(item => item.cartId === cartId && item.productId === productId);
+            if (!cartItem) return;
+
+            // Kiểm tra số lượng tối đa
+            if (newQuantity > cartItem.stockQuantity) {
+                alert(`Chỉ còn ${cartItem.stockQuantity} sản phẩm có sẵn`);
+                return;
+            }
+
+            await updateQuantity(cartId, productId, newQuantity);
+        } catch (error) {
+            console.error('Update failed:', error);
+            alert('Không thể cập nhật số lượng');
         }
     };
 
@@ -60,8 +78,21 @@ const Cart = () => {
 
                                     return (
                                         <div key={`${item.cartId}-${item.productId}`} className="cart-item">
+                                            <button 
+                                                className="remove-item-button"
+                                                onClick={() => removeFromCart(item.cartId, item.productId)}
+                                            >
+                                                ×
+                                            </button>
                                             <div className="item-image">
-                                                <img src={`./assets/${item.imageUrl}`} alt={item.name} />
+                                                <img 
+                                                    src={`./assets/${item.imageUrl}`} 
+                                                    alt={item.name}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = './assets/images/default.jpg';
+                                                    }}
+                                                />
                                             </div>
                                             <div className="item-details">
                                                 <h3>{item.name}</h3>
@@ -73,17 +104,26 @@ const Cart = () => {
                                                 </div>
                                                 <div className="item-actions">
                                                     <div className="quantity-controls">
-                                                        <button onClick={() => handleQuantityChange(item.cartId, item.productId, item.quantity - 1)} disabled={item.quantity <= 1}>-</button>
+                                                        <button 
+                                                            className="quantity-btn"
+                                                            onClick={() => handleQuantityChange(item.cartId, item.productId, item.quantity - 1)}
+                                                            disabled={item.quantity <= 1}
+                                                        >
+                                                            −
+                                                        </button>
                                                         <span>{item.quantity}</span>
-                                                        <button onClick={() => handleQuantityChange(item.cartId, item.productId, item.quantity + 1)}>+</button>
+                                                        <button 
+                                                            className="quantity-btn"
+                                                            onClick={() => handleQuantityChange(item.cartId, item.productId, item.quantity + 1)}
+                                                            disabled={item.quantity >= item.stockQuantity}
+                                                        >
+                                                            +
+                                                        </button>
                                                     </div>
                                                     <div className="item-total">
                                                         <span>Thành tiền: </span>
                                                         <span className="total-price">${totalItemPrice.toLocaleString()}</span>
                                                     </div>
-                                                    <button className="remove-button" onClick={() => removeFromCart(item.cartId, item.productId)}>
-                                                        <i className="fas fa-trash"></i>
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Data;
 using Microsoft.OpenApi.Models;
 using Backend.Hubs;
+using Backend.Services;
+using Backend.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +63,16 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add email configuration
+builder.Services.Configure<EmailSettings>(options =>
+{
+    options.SystemEmail = builder.Configuration["EmailSettings:SystemEmail"]
+        ?? Environment.GetEnvironmentVariable("EMAIL_SYSTEM");
+    options.AppPassword = builder.Configuration["EmailSettings:AppPassword"]
+        ?? Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
+    options.DisplayName = builder.Configuration["EmailSettings:DisplayName"];
+});
+
 // Add DB Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -86,6 +98,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IExchangeService, ExchangeService>();
 
 var app = builder.Build();
 

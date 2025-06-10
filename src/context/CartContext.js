@@ -7,43 +7,71 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [cartCount, setCartCount] = useState(0);
-    const user = JSON.parse(localStorage.getItem('user'));
+
+    const [userId, setUserId] = useState(null);
+
+    // Chỉ lấy userId từ localStorage một lần khi component mount
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        setUserId(user?.id || null);
+    }, []);
 
     const fetchCart = useCallback(async () => {
-        if (!user) return;
+        if (!userId) return;
         try {
-            const response = await axios.get(`${API_URL}/cart/${user.id}`);
+            const response = await axios.get(`${API_URL}/cart/${userId}`, {
+                headers: {
+                    'ngrok-skip-browser-warning': 'true'
+                }
+            });
             setCart(response.data);
         } catch (error) {
             console.error('Failed to fetch cart:', error);
         }
-    }, [user]);
+    }, [userId]); // Chỉ phụ thuộc vào userId
 
+    // Chỉ fetch cart khi userId thay đổi
     useEffect(() => {
-        if (user) {
+        if (userId) {
             fetchCart();
+        } else {
+            setCart([]);
         }
-    }, [user, fetchCart]);
+    }, [userId, fetchCart]);
 
+    // Tính toán cartCount khi cart thay đổi
     useEffect(() => {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         setCartCount(totalItems);
     }, [cart]);
 
     const addToCart = async (product) => {
-        if (!user) {
-            alert('Please login to add items to cart');
-            return;
+        if (!userId) {
+            throw new Error('User not logged in');
         }
-
         try {
+            // Kiểm tra số lượng hiện có trong giỏ hàng
+            const existingItem = cart.find(item => item.productId === product.id);
+            const currentQuantity = existingItem ? existingItem.quantity : 0;
+            const newTotalQuantity = currentQuantity + (product.quantity || 1);
+
+            // Kiểm tra nếu vượt quá stock
+            if (newTotalQuantity > product.stockQuantity) {
+                throw new Error(`Cannot add more items. Maximum available: ${product.stockQuantity}`);
+            }
+
+            // Gọi API để thêm vào giỏ hàng
             const response = await axios.post(`${API_URL}/cart/add`, {
-                userId: user.id,
+                userId: userId,
                 productId: product.id,
-                quantity: 1
+                quantity: product.quantity || 1
             });
-            await fetchCart();
-            return response.data;
+
+            if (response.data) {
+                await fetchCart(); // Refresh cart after successful add
+                return response.data;
+            }
+            throw new Error('Failed to add to cart');
         } catch (error) {
             console.error('Failed to add to cart:', error);
             throw error;
@@ -60,17 +88,48 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const updateQuantity = async (cartId, quantity) => {
+    const updateQuantity = async (cartId, productId, quantity) => {
         try {
-            await axios.put(`${API_URL}/cart/${cartId}/quantity`, quantity);
-            fetchCart();
+            console.log('Updating quantity:', { cartId, productId, quantity });
+
+            // Validate quantity
+            if (quantity < 1) {
+                throw new Error('Quantity cannot be less than 1');
+            }
+
+            // Convert quantity to number and send as JSON
+            const response = await axios.put(
+                `${API_URL}/cart/${cartId}/products/${productId}/quantity`,
+                JSON.stringify(quantity),
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.data) {
+                console.log('Update successful:', response.data);
+                await fetchCart(); // Refresh cart after successful update
+                return response.data;
+            }
+
+            throw new Error('Failed to update quantity');
         } catch (error) {
-            console.error('Failed to update quantity:', error);
+            console.error('Update quantity error:', error);
+            throw error;
         }
     };
 
     return (
-        <CartContext.Provider value={{ cart, cartCount, addToCart, removeFromCart, updateQuantity }}>
+        <CartContext.Provider value={{
+            cart,
+            cartCount,
+            addToCart,
+            removeFromCart,
+            updateQuantity,
+            fetchCart // Thêm fetchCart vào context để có thể gọi khi cần
+        }}>
             {children}
         </CartContext.Provider>
     );

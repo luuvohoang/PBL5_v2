@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { deleteProduct } from '../services/api';
+import '../styles/ProductCard.css';
 
 const ProductCard = ({ product, onDelete }) => {
     const { addToCart } = useCart();
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
+    const [imageError, setImageError] = useState(false);
+
+    const imageUrl = imageError || !product.imageUrl ? 
+        '/assets/images/default.jpg' : 
+        `/assets/${product.imageUrl}`;
 
     const handleAddToCart = async (e) => {
         e.preventDefault(); // Prevent navigation when clicking the button
@@ -42,12 +48,21 @@ const ProductCard = ({ product, onDelete }) => {
     const displayPrice = product.sale
         ? product.price * (1 - product.sale.discountPercent / 100)
         : product.price;
-    // console.log('sale: ', product.sale.discountPercent);
-    // : product.price;
 
     return (
-        <Link to={`/product/${product.id}`} className="card product-card">
-            <img src={`./assets/${product.imageUrl}`} alt={product.name} />
+        <Link to={`/products/${product.id}`} className="product-card">
+            <div className="product-image">
+                <img
+                    src={imageUrl}
+                    alt={product.name}
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/assets/images/default.jpg';
+                        setImageError(true);
+                    }}
+                    loading="lazy"
+                />
+            </div>
             <h3>{product.name}</h3>
             <p>{product.description}</p>
             <div className="price-container">
