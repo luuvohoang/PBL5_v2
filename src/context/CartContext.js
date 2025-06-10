@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const API_URL = 'https://a50d-2405-4802-b55f-5dd0-1853-b396-5436-830e.ngrok-free.app/api';
+const API_URL = 'http://localhost:5000/api';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {

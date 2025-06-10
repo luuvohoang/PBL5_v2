@@ -6,7 +6,7 @@ axios.interceptors.request.use(
         if (user?.role) {
             config.headers['UserRole'] = user.role;
         }
-        config.headers['ngrok-skip-browser-warning'] = 'true';
+        // config.headers['ngrok-skip-browser-warning'] = 'true';
         return config;
     },
     (error) => {
@@ -14,7 +14,7 @@ axios.interceptors.request.use(
     }
 );
 
-const API_URL = 'https://a50d-2405-4802-b55f-5dd0-1853-b396-5436-830e.ngrok-free.app/api';  // Make sure this matches your backend URL
+const API_URL = 'http://localhost:5000/api';  // Make sure this matches your backend URL
 
 export const getProducts = async (params = {}) => {
     try {
@@ -644,5 +644,112 @@ export const removeFromCart = async (userId, itemId) => {
     } catch (error) {
         console.error('Failed to remove from cart:', error);
         throw error;
+    }
+};
+
+// Exchange APIs
+export const createExchangeRequest = async (exchangeData) => {
+    try {
+        const response = await axios.post(`${API_URL}/exchanges/request`, exchangeData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating exchange request:', error.response?.data || error);
+        throw error;
+    }
+};
+
+export const getUserExchanges = async (userId) => {
+    try {
+        const response = await axios.get(`${API_URL}/exchanges/user/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user exchanges:', error);
+        throw error;
+    }
+};
+
+export const getExchangeDetails = async (exchangeId) => {
+    try {
+        const response = await axios.get(`${API_URL}/exchanges/${exchangeId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching exchange details:', error);
+        throw error;
+    }
+};
+
+export const processExchangeRequest = async (exchangeId, processData) => {
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id) {
+            throw new Error('User not authenticated');
+        }
+
+        console.log('Processing exchange request with data:', {
+            exchangeId,
+            processData,
+            userId: user.id
+        });
+
+        const requestData = {
+            ExchangeId: exchangeId,
+            IsApproved: processData.isApproved,
+            NewItemId: processData.isApproved ? parseInt(processData.newItemId) : null,
+            Notes: processData.notes || '',
+            ProcessedById: user.id
+        };
+        console.log('Request data:', requestData); // Debug log
+        console.log('User role:', user.role); // Debug log
+        console.log('User ID:', user.id); // Debug log
+        const response = await axios.post(`${API_URL}/exchanges/process`, requestData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'UserRole': user.role,
+                'UserId': user.id.toString()
+            }
+        });
+
+        if (!response.data) {
+            throw new Error('Empty response from server');
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error('Error processing exchange request:', error.response?.data || error);
+        throw new Error(error.response?.data?.message || error.message || 'Failed to process exchange request');
+    }
+};
+
+export const getAllPendingExchanges = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/exchanges/pending`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching pending exchanges:', error);
+        throw error;
+    }
+};
+
+export const cancelExchangeRequest = async (exchangeId) => {
+    try {
+        const response = await axios.post(`${API_URL}/exchanges/${exchangeId}/cancel`);
+        return response.data;
+    } catch (error) {
+        console.error('Error canceling exchange request:', error);
+        throw error;
+    }
+};
+
+export const cancelOrder = async (orderId) => {
+    try {
+        const response = await axios.post(`${API_URL}/orders/${orderId}/cancel`);
+        return response.data;
+    } catch (error) {
+        console.error('Error cancelling order:', error.response?.data || error);
+        throw new Error(error.response?.data?.message || 'Failed to cancel order');
     }
 };

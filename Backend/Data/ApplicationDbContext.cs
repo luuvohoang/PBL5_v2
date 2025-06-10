@@ -24,6 +24,8 @@ namespace Backend.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<ProductItem> ProductItems { get; set; }
         public DbSet<Warranty> Warranties { get; set; }
+        public DbSet<ProductExchange> ProductExchanges { get; set; }
+        public DbSet<ExchangeStatus> ExchangeStatuses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -224,6 +226,13 @@ namespace Backend.Data
                     ImageUrl = "/images/b550f.jpg",
                     SaleId = null  // Add this line
                 }
+            );
+
+            modelBuilder.Entity<ExchangeStatus>().HasData(
+                new ExchangeStatus { Id = 1, Name = "Pending" },
+                new ExchangeStatus { Id = 2, Name = "Approved" },
+                new ExchangeStatus { Id = 3, Name = "Rejected" },
+                new ExchangeStatus { Id = 4, Name = "Completed" }
             );
         }
     }

@@ -163,6 +163,7 @@ namespace Backend.Controllers
                         items = o.OrderDetails.Select(od => new
                         {
                             id = od.Id,
+                            ItemId = od.ItemId,
                             productName = od.ProductItem.Product.Name ?? "Unknown Product",
                             serialNumber = od.ProductItem.SerialNumber ?? "N/A",
                             unitPrice = od.UnitPrice,
@@ -467,6 +468,58 @@ namespace Backend.Controllers
             {
                 return StatusCode(500, new { message = $"Error fetching top products: {ex.Message}" });
             }
+        }
+
+        [HttpPost("{id}/cancel")]
+        public async Task<ActionResult> CancelOrder(int id)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return await strategy.ExecuteAsync(async () =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    var order = await _context.Orders
+                        .Include(o => o.OrderDetails)
+                            .ThenInclude(od => od.ProductItem)
+                        .FirstOrDefaultAsync(o => o.Id == id);
+
+                    if (order == null)
+                        return NotFound($"Order with ID {id} not found");
+
+                    if (order.Status != "Pending")
+                        return BadRequest("Only pending orders can be cancelled");
+
+                    // Cập nhật trạng thái đơn hàng
+                    order.Status = "Cancelled";
+                    order.UpdatedAt = DateTime.UtcNow;
+
+                    // Trả lại trạng thái ban đầu cho các sản phẩm
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        detail.ProductItem.Status = "in_stock";
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(new
+                    {
+                        message = "Order cancelled successfully",
+                        order = new
+                        {
+                            id = order.Id,
+                            status = order.Status,
+                            updatedAt = order.UpdatedAt
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, new { message = ex.Message });
+                }
+            });
         }
     }
 }

@@ -40,6 +40,7 @@ const Navbar = () => {
                         <Link to="/customers">Customer Management</Link>
                         <Link to="/ProductManagement">Product Management</Link>
                         <Link to="/admin/orders">Order Management</Link>
+                        <Link to="/exchange-management">Exchange Management</Link>
                         <Link to="/chat">Staff Chat</Link>
                     </>
                 );

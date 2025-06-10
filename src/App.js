@@ -26,6 +26,7 @@ import ResetPassword from './pages/ResetPassword';
 import ProductItemManagement from './pages/ProductItemManagement';
 import './styles/common-animations.css';
 import './styles/auth.css';
+import ExchangeManagement from './pages/ExchangeManagement';
 
 function App() {
     return (
@@ -128,6 +129,15 @@ function App() {
                         />
                         <Route path="/reset-password" element={<ResetPassword />} />
                         <Route path="/products/:id/items" element={<ProductItemManagement />} />
+                        <Route
+                            path="/exchange-management"
+                            element={
+                                <PrivateRoute
+                                    element={<ExchangeManagement />}
+                                    allowedRoles={['Admin', 'Manager']}
+                                />
+                            }
+                        />
                     </Routes>
                 </div>
             </Router>
