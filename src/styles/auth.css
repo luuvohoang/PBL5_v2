@@ -125,6 +125,18 @@
     width: 100%;
     max-width: 400px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .auth-header {
@@ -163,6 +175,24 @@
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     outline: none;
+}
+
+.form-input:invalid {
+    border-color: #ff4444;
+}
+
+.form-input:focus:invalid {
+    border-color: #ff4444;
+    box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2);
+}
+
+.form-input:valid {
+    border-color: #00C851;
+}
+
+.form-input:focus:valid {
+    border-color: #00C851;
+    box-shadow: 0 0 0 2px rgba(0, 200, 81, 0.2);
 }
 
 .auth-button {
@@ -226,4 +256,41 @@
     padding: 0 1rem;
     color: #718096;
     font-size: 0.875rem;
+}
+
+.password-strength {
+    height: 4px;
+    margin-top: 5px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.strength-weak {
+    background: #ff4444;
+    width: 33%;
+}
+
+.strength-medium {
+    background: #ffbb33;
+    width: 66%;
+}
+
+.strength-strong {
+    background: #00C851;
+    width: 100%;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 20px;
+        width: 90%;
+    }
+
+    .auth-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-input {
+        font-size: 14px;
+    }
 }

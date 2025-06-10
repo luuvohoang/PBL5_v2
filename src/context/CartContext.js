@@ -91,12 +91,10 @@ export const CartProvider = ({ children }) => {
     const updateQuantity = async (cartId, productId, quantity) => {
         try {
             console.log('Updating quantity:', { cartId, productId, quantity });
-
             // Validate quantity
             if (quantity < 1) {
                 throw new Error('Quantity cannot be less than 1');
             }
-
             // Convert quantity to number and send as JSON
             const response = await axios.put(
                 `${API_URL}/cart/${cartId}/products/${productId}/quantity`,
@@ -107,13 +105,11 @@ export const CartProvider = ({ children }) => {
                     }
                 }
             );
-
             if (response.data) {
                 console.log('Update successful:', response.data);
                 await fetchCart(); // Refresh cart after successful update
                 return response.data;
             }
-
             throw new Error('Failed to update quantity');
         } catch (error) {
             console.error('Update quantity error:', error);

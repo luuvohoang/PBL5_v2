@@ -95,7 +95,63 @@
     padding-left: 25px;
 }
 
+.category-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    color: #007bff;
+}
+
+.category-link:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.categories-toggle i {
+    margin-right: 8px;
+    color: #007bff;
+}
+
+.categories-menu:hover .categories-toggle i {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Icon styling */
+.nav-link i,
+.auth-links i,
+.logo i {
+    margin-right: 8px;
+}
+
+.main-menu a i {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+.user-welcome i {
+    margin-right: 5px;
+    color: #007bff;
+}
+
+.logo i {
+    color: #007bff;
+    font-size: 1.2em;
+}
+
+.nav-actions button i {
+    margin-right: 5px;
+}
+
+/* Hover effects for icons */
+.nav-link:hover i,
+.auth-links a:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
 }

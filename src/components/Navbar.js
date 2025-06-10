@@ -11,10 +11,10 @@ const Navbar = () => {
     const { cartCount } = useCart();
 
     const categoryLinks = [
-        { name: 'CPUs', path: '/products?category=CPU' },
-        { name: 'GPUs', path: '/products?category=GPU' },
-        { name: 'Motherboards', path: '/products?category=Motherboard' },
-        { name: 'RAM', path: '/products?category=RAM' }
+        { name: 'CPUs', path: '/products?category=CPU', icon: 'fas fa-microchip' },
+        { name: 'GPUs', path: '/products?category=GPU', icon: 'fas fa-tv' },
+        { name: 'Motherboards', path: '/products?category=Motherboard', icon: 'fas fa-server' },
+        { name: 'RAM', path: '/products?category=RAM', icon: 'fas fa-memory' }
     ];
 
     const handleCategoryClick = (categoryPath) => {
@@ -35,27 +35,27 @@ const Navbar = () => {
             case 'Manager':
                 return (
                     <>
-                        <Link to="/dashboard">Dashboard</Link>
-                        <Link to="/employees">Employee Management</Link>
-                        <Link to="/customers">Customer Management</Link>
-                        <Link to="/ProductManagement">Product Management</Link>
-                        <Link to="/admin/orders">Order Management</Link>
+                        <Link to="/dashboard"><i className="fas fa-chart-line"></i> Dashboard</Link>
+                        <Link to="/employees"><i className="fas fa-users"></i> Employee Management</Link>
+                        <Link to="/customers"><i className="fas fa-user-friends"></i> Customer Management</Link>
+                        <Link to="/ProductManagement"><i className="fas fa-box"></i> Product Management</Link>
+                        <Link to="/admin/orders"><i className="fas fa-shopping-bag"></i> Order Management</Link>
                         <Link to="/exchange-management">Exchange Management</Link>
-                        <Link to="/chat">Staff Chat</Link>
+                        <Link to="/chat"><i className="fas fa-comments"></i> Staff Chat</Link>
                     </>
                 );
             case 'Staff':
                 return (
                     <>
-                        <Link to="/dashboard">Dashboard</Link>
-                        <Link to="/customers">Customer Management</Link>
-                        <Link to="/ProductManagement">Product Management</Link>
-                        <Link to="/admin/orders">Order Management</Link>
-                        <Link to="/chat">Staff Chat</Link>
+                        <Link to="/dashboard"><i className="fas fa-chart-line"></i> Dashboard</Link>
+                        <Link to="/customers"><i className="fas fa-user-friends"></i> Customer Management</Link>
+                        <Link to="/ProductManagement"><i className="fas fa-box"></i> Product Management</Link>
+                        <Link to="/admin/orders"><i className="fas fa-shopping-bag"></i> Order Management</Link>
+                        <Link to="/chat"><i className="fas fa-comments"></i> Staff Chat</Link>
                     </>
                 );
             case 'Customer':
-                return <Link to="/customer-chat">Support Chat</Link>;
+                return <Link to="/customer-chat"><i className="fas fa-headset"></i> Support Chat</Link>;
             default:
                 return null;
         }
@@ -88,7 +88,7 @@ const Navbar = () => {
             {/* Main Navigation */}
             <nav className="navbar-main">
                 <div className="container">
-                    <Link to="/" className="logo">PC Parts Store</Link>
+                    <Link to="/" className="logo"><i className="fas fa-desktop"></i> PC Parts Store</Link>
                     <form className="search-bar" onSubmit={handleSearch}>
                         <input
                             type="text"
@@ -103,15 +103,15 @@ const Navbar = () => {
                     <div className="nav-actions">
                         {user ? (
                             <>
-                                <span className="user-welcome">Hi, {user.username}</span>
-                                <Link to="/profile" className="nav-link">Profile</Link>
-                                <Link to="/orders" className="nav-link">Orders</Link>
-                                <button onClick={handleLogout}>Logout</button>
+                                <span className="user-welcome"><i className="fas fa-user"></i> Hi, {user.username}</span>
+                                <Link to="/profile" className="nav-link"><i className="fas fa-user-circle"></i> Profile</Link>
+                                <Link to="/orders" className="nav-link"><i className="fas fa-receipt"></i> Orders</Link>
+                                <button onClick={handleLogout}><i className="fas fa-sign-out-alt"></i> Logout</button>
                             </>
                         ) : (
                             <div className="auth-links">
-                                <Link to="/login">Login</Link>
-                                <Link to="/register">Register</Link>
+                                <Link to="/login"><i className="fas fa-sign-in-alt"></i> Login</Link>
+                                <Link to="/register"><i className="fas fa-user-plus"></i> Register</Link>
                             </div>
                         )}
                         <Link to="/cart" className="cart-icon">
@@ -140,6 +140,7 @@ const Navbar = () => {
                                         className="category-link"
                                         onClick={() => handleCategoryClick(category.path)}
                                     >
+                                        <i className={category.icon}></i>
                                         {category.name}
                                     </Link>
                                 ))}

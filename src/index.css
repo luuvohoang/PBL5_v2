@@ -135,6 +135,16 @@ code {
     margin-right: 0.5rem;
     color: var(--primary-color);
 }
+/* App Container */
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+}
 
 /* Navbar Wrapper */
 .navbar-wrapper {
@@ -168,6 +178,31 @@ code {
 }
 
 .logo:hover {
+    color: var(--primary-color);
+}
+
+/* Contact Bar */
+.contact-bar {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 8px 0;
+    font-size: 0.85rem;
+}
+
+.contact-info {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+}
+
+.contact-info span {
+    display: flex;
+    align-items: center;
+    opacity: 0.9;
+}
+
+.contact-info span i {
+    margin-right: 0.5rem;
     color: var(--primary-color);
 }
 

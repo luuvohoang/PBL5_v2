@@ -1,6 +1,10 @@
 # PC Parts Store
 
+<<<<<<< HEAD
 Web application for managing PC component sales.
+=======
+A web application for managing PC parts sales with an integrated AI chatbot assistant.
+>>>>>>> origin/08-06
 
 ## Setup
 
@@ -24,6 +28,18 @@ npm install
 npm start
 ```
 
+### AI Chatbot Assistant Setup
+1. Install dependencies:
+```bash
+npm install langchain @langchain/openai
+```
+
+2. Configure environment variables:
+Create a `.env` file in the root directory and add:
+```
+OPENAI_API_KEY=your_openai_api_key
+```
+
 ## Features
 - Product management
 - Shopping cart
@@ -31,6 +47,13 @@ npm start
 - Role-based access control
 - Sales tracking
 - Image management
+
+### AI Chatbot Assistant
+- Powered by LangChain and OpenAI's GPT-3.5
+- Context-aware conversations about PC parts
+- Memory management for maintaining conversation context
+- Easy context clearing
+- Real-time typing indicators
 
 ## Development
 - Backend: ASP.NET Core Web API
