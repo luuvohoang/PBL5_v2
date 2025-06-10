@@ -5,11 +5,11 @@ import '../styles/Policies.css';
 const policyContent = {
     privacy: {
         title: "Chính Sách Bảo Mật",
-        content: `<h2>THÔNG BÁO TỪ TTGShop.vn</h2>
-                <p>Khi truy cập hệ thống trang web TTGShop.vn, nghĩa là quý khách đồng ý chấp nhận thực hiện những mô tả trong Quy định bảo mật.</p>
+        content: `<h2>THÔNG BÁO TỪ PCShop.vn</h2>
+                <p>Khi truy cập hệ thống trang web PCShop.vn, nghĩa là quý khách đồng ý chấp nhận thực hiện những mô tả trong Quy định bảo mật.</p>
 
                 <h3>1. Mục đích thu thập thông tin cá nhân</h3>
-                <p>TTGShop.vn sử dụng thông tin thu thập từ khách hàng để:</p>
+                <p>PCShop.vn sử dụng thông tin thu thập từ khách hàng để:</p>
                 <ul>
                     <li>Phát triển website ngày càng phong phú hơn</li>
                     <li>Cung cấp dịch vụ phù hợp với nhu cầu</li>
@@ -25,9 +25,9 @@ const policyContent = {
 
                 <div class="contact-section">
                     <h3>Thông Tin Liên Hệ</h3>
-                    <p><strong>Công ty:</strong> TTGShop</p>
+                    <p><strong>Công ty:</strong> pcShop</p>
                     <p><strong>Địa chỉ:</strong> 123 ABC, Quận X, TP.HCM</p>
-                    <p><strong>Email:</strong> contact@ttgshop.vn</p>
+                    <p><strong>Email:</strong> contact@PCshop.vn</p>
                     <p><strong>Điện thoại:</strong> 1900 xxxx</p>
                 </div>`
     },

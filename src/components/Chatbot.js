@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { sendMessageToOpenAI } from '../services/openaiService';
-import { clearContext } from '../services/langchainService';
+import chatbotService from '../services/chatbotService';
 import '../styles/Chatbot.css';
 
 const Chatbot = () => {
@@ -18,6 +17,15 @@ const Chatbot = () => {
         scrollToBottom();
     }, [messages]);
 
+    useEffect(() => {
+        // Add initial greeting message
+        setMessages([{
+            text: "Xin chào! Tôi là trợ lý AI của cửa hàng linh kiện PC. Tôi có thể giúp gì cho bạn?",
+            isUser: false,
+            timestamp: new Date().toISOString()
+        }]);
+    }, []);
+
     const handleSend = async () => {
         if (!inputMessage.trim()) return;
 
@@ -32,7 +40,7 @@ const Chatbot = () => {
         setIsTyping(true);
 
         try {
-            const response = await sendMessageToOpenAI(inputMessage);
+            const response = await chatbotService.sendMessage(inputMessage);
             const botMessage = {
                 text: response,
                 isUser: false,
@@ -40,9 +48,9 @@ const Chatbot = () => {
             };
             setMessages(prev => [...prev, botMessage]);
         } catch (error) {
-            console.error('Error sending message to OpenAI:', error);
+            console.error('Error sending message:', error);
             const errorMessage = {
-                text: "Sorry, I'm having trouble processing your request.",
+                text: "Xin lỗi, tôi đang gặp sự cố. Vui lòng thử lại sau.",
                 isUser: false,
                 timestamp: new Date().toISOString()
             };
@@ -53,8 +61,12 @@ const Chatbot = () => {
     };
 
     const handleClearContext = () => {
-        clearContext();
-        setMessages([]);
+        chatbotService.clearMemory();
+        setMessages([{
+            text: "Tôi đã làm mới bộ nhớ. Bạn cần tôi giúp gì?",
+            isUser: false,
+            timestamp: new Date().toISOString()
+        }]);
     };
 
     return (
